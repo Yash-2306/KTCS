@@ -3,28 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kriti - The Concept School</title>
-    <link rel="icon" type="img/png" href="KTCS_logo-removebg-preview.png">
+    <title>Contact - Kriti The Concept School</title>
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
     <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent: '#F5A623',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="sample.js" defer></script>
 </head>
-<body>
-    
-        <div>
-            <img src="KTCS_logo-removebg-preview.png" alt="KTCS Logo" height="150">
-            <h1>Kriti - The Concept School</h1>
+<body class="font-sans text-gray-800 bg-gray-50">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-12 w-auto slide-left">
+                <span class="text-xl font-bold text-white slide-right">Kriti – The Concept School</span>
+            </div>
+            <ul class="hidden md:flex items-center gap-8 font-medium text-white">
+                <li class="slide-down" style="animation-delay:0.1s"><a href="sample.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li class="slide-down" style="animation-delay:0.2s"><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li class="slide-down" style="animation-delay:0.3s"><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li class="slide-down" style="animation-delay:0.4s"><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li class="slide-down" style="animation-delay:0.5s"><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li class="slide-down" style="animation-delay:0.6s">
+                    <a href="Login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">Login</a>
+                </li>
+            </ul>
         </div>
-        <header>
-        <nav class="navbar">
-            <ul>
-            <li><a href="sample.html">Home</a></li>
-            <li><a href="About_us.html">About Us</a></li>
-            <li><a href="Courses.html">Courses</a></li>
-            <li><a href="Contact.html">Contact</a></li>
-        </ul>
-        </nav>
-    </header>
-        <main>contact page 
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </main>
+    </nav>
+
+    <!-- HERO -->
+    <section style="background-image: url('Assets/images/Back_img.jpg')"
+             class="relative min-h-[40vh] bg-cover bg-center flex items-center justify-center text-white">
+        <div class="absolute inset-0 bg-[#04192f] opacity-60"></div>
+        <div class="relative z-10 text-center mt-16">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-white reveal">Contact Us</h1>
+            <p class="text-blue-200 mt-4 text-lg reveal" style="transition-delay:0.2s">
+                We'd love to hear from you
+            </p>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+
+            <!-- LEFT: Contact Info -->
+            <div class="reveal-left">
+                <h2 class="text-3xl font-bold text-primary mb-8">Get In Touch</h2>
+
+                <!-- Address -->
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="bg-primary text-white rounded-full p-3 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800">Address</p>
+                        <a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6" target="_blank" class="text-gray-600 hover:text-accent transition">
+                            5-31-303, Saibaba Nagar, Suraram,<br>Hyderabad, Telangana 500055
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="flex items-start gap-4 mb-6">
+                    <div class="bg-primary text-white rounded-full p-3 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800">Phone</p>
+                        <a href="tel:+919949789922" class="text-gray-600 hover:text-accent transition">
+                            +91 99497 89922
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="flex items-start gap-4 mb-10">
+                    <div class="bg-primary text-white rounded-full p-3 mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-800">Email</p>
+                        <a href="mailto:ktcs.school@gmail.com" class="text-gray-600 hover:text-accent transition">
+                            ktcs.school@gmail.com
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div>
+                    <p class="font-semibold text-gray-800 mb-4">Follow Us</p>
+                    <div class="flex gap-4">
+                        <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"
+                           class="bg-primary hover:bg-accent transition rounded-full p-3">
+                            <img src="Assets/images/youtube.png" alt="YouTube" class="h-5 w-5 object-contain">
+                        </a>
+                        <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"
+                           class="bg-primary hover:bg-accent transition rounded-full p-3">
+                            <img src="Assets/images/facebook.png" alt="Facebook" class="h-5 w-5 object-contain">
+                        </a>
+                        <a href="#" class="bg-primary hover:bg-accent transition rounded-full p-3">
+                            <img src="Assets/images/instagram.png" alt="Instagram" class="h-5 w-5 object-contain">
+                        </a>
+                        <a href="#" class="bg-primary hover:bg-accent transition rounded-full p-3">
+                            <img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-5 w-5 object-contain">
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Form -->
+            <div class="reveal-right bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-primary mb-6">Send us a message</h2>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                    <input type="text" placeholder="Your full name"
+                           class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition">
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Contact Number</label>
+                    <input type="tel" placeholder="+91 XXXXX XXXXX"
+                           class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition">
+                </div>
+
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <input type="email" placeholder="your@email.com"
+                           class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Message</label>
+                    <textarea rows="4" placeholder="Write your message here..."
+                              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition resize-none"></textarea>
+                </div>
+
+                <button class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition">
+                    Send Message
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- MAP -->
+    <section class="reveal pb-20 px-6">
+        <div class="max-w-7xl mx-auto rounded-2xl overflow-hidden shadow-lg">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.0!2d78.4744!3d17.5200!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb8f2d2d2d2d2d%3A0x0!2sKriti+The+Concept+School!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
+                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+        </div>
+    </section>
+
+    <!-- SOCIAL STRIP -->
+    <section class="py-2 bg-[#04192f] flex justify-end pr-5 gap-3 overflow-hidden">
+        <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+        <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
+
+    <!-- FOOTER -->
+    <section class="py-4 bg-[#04192f]">
+        <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+            <div class="reveal-left flex-shrink-0">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-52 w-auto">
+            </div>
+            <div class="reveal-right text-center md:text-left text-gray-300 space-y-2">
+                <p>&copy; 2026 Kriti – The Concept School. All rights reserved.</p>
+                <p><a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6" target="_blank" class="hover:text-accent transition">
+                    Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055
+                </a></p>
+                <p>Email: ktcs.school@gmail.com</p>
+                <p>Phone: +91 99497 89922</p>
+                <p class="text-sm text-gray-400 pt-2">Designed & Developed by Yashvardhan</p>
+            </div>
+        </div>
+    </section>
+
 </body>
 </html>

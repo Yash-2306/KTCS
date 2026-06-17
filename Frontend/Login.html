@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Kriti The Concept School</title>
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
+    <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent: '#F5A623',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans bg-gradient-to-br from-primary to-blue-900 min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-md px-6">
+
+        <!-- Logo + School Name -->
+        <div class="text-center mb-8 slide-left">
+            <img src="Assets/images/KTCS_logo-removebg-preview.png"
+                 alt="KTCS Logo" class="h-24 w-auto mx-auto mb-4">
+            <h1 class="text-2xl font-bold text-white">Kriti – The Concept School</h1>
+            <p class="text-blue-200 text-sm mt-1">Student & Staff Portal</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white rounded-3xl shadow-2xl p-8 slide-right">
+
+            <h2 class="text-2xl font-bold text-primary text-center mb-6">Welcome Back</h2>
+
+            <!-- Role Selector -->
+            <div class="flex rounded-xl overflow-hidden border border-gray-200 mb-6">
+                <button onclick="setRole('student')"
+                        id="btn-student"
+                        class="role-btn flex-1 py-2 text-sm font-semibold transition bg-primary text-white">
+                    Student
+                </button>
+                <button onclick="setRole('teacher')"
+                        id="btn-teacher"
+                        class="role-btn flex-1 py-2 text-sm font-semibold transition bg-white text-gray-500">
+                    Teacher
+                </button>
+                <button onclick="setRole('admin')"
+                        id="btn-admin"
+                        class="role-btn flex-1 py-2 text-sm font-semibold transition bg-white text-gray-500">
+                    Admin
+                </button>
+            </div>
+
+            <!-- Username -->
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Username / ID
+                </label>
+                <input type="text"
+                       id="username"
+                       placeholder="Enter your username"
+                       class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-gray-800">
+            </div>
+
+            <!-- Password -->
+            <div class="mb-2">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Password
+                </label>
+                <div class="relative">
+                    <input type="password"
+                           id="password"
+                           placeholder="Enter your password"
+                           class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-primary transition text-gray-800 pr-12">
+                    <!-- Show/Hide password toggle -->
+                    <button onclick="togglePassword()"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition text-sm">
+                        👁
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error message placeholder -->
+            <p id="error-msg" class="text-red-500 text-sm mb-4 hidden">
+                Invalid username or password.
+            </p>
+
+            <!-- Login Button -->
+            <button onclick="handleLogin()"
+                    class="w-full bg-primary text-white py-3 rounded-xl font-semibold hover:bg-accent transition mt-4">
+                Login
+            </button>
+
+            <!-- Back to website -->
+            <div class="text-center mt-6">
+                <a href="sample.html"
+                   class="text-sm text-gray-400 hover:text-primary transition">
+                    ← Back to website
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Footer note -->
+        <p class="text-center text-blue-200 text-xs mt-6">
+            &copy; 2026 Kriti – The Concept School
+        </p>
+
+    </div>
+
+    <script>
+        let selectedRole = 'student';
+
+        function setRole(role) {
+            selectedRole = role;
+            // reset all buttons
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-500');
+            });
+            // highlight selected
+            const selected = document.getElementById('btn-' + role);
+            selected.classList.remove('bg-white', 'text-gray-500');
+            selected.classList.add('bg-primary', 'text-white');
+        }
+
+        function togglePassword() {
+            const pwd = document.getElementById('password');
+            pwd.type = pwd.type === 'password' ? 'text' : 'password';
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (!username || !password) {
+                errorMsg.textContent = 'Please enter username and password.';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            // ── once backend is ready, replace this block ──
+            // const response = await fetch('http://localhost:8080/api/auth/login', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ username, password, role: selectedRole })
+            // });
+            // const data = await response.json();
+            // if (data.token) {
+            //     localStorage.setItem('token', data.token);
+            //     localStorage.setItem('role', data.role);
+            //     if (data.role === 'ADMIN') window.location.href = 'admin-dashboard.html';
+            //     if (data.role === 'TEACHER') window.location.href = 'teacher-dashboard.html';
+            //     if (data.role === 'STUDENT') window.location.href = 'student-dashboard.html';
+            // } else {
+            //     errorMsg.textContent = 'Invalid credentials.';
+            //     errorMsg.classList.remove('hidden');
+            // }
+            // ── end backend block ──
+
+            // temporary redirect for UI testing
+            if (selectedRole === 'admin') window.location.href = 'admin-dashboard.html';
+            if (selectedRole === 'teacher') window.location.href = 'teacher-dashboard.html';
+            if (selectedRole === 'student') window.location.href = 'student-dashboard.html';
+        }
+    </script>
+
+</body>
+</html>

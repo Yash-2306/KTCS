@@ -4,27 +4,176 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kriti - The Concept School</title>
-    <link rel="icon" type="img/png" href="KTCS_logo-removebg-preview.png">
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
     <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent: '#F5A623',  
+                    }
+                }
+            }
+        }
+    </script> <!--page for sample-->
+    <script src="sample.js" defer></script>
 </head>
-<body>
-        <div>
-            <img src="KTCS_logo-removebg-preview.png" alt="KTCS Logo" height="150">
-            <h1>Kriti - The Concept School</h1>
-        </div>
-        <header>
-        <nav class="navbar">
-            <ul>
-            <li><a href="sample.html">Home</a></li>
-            <li><a href="About_us.html">About Us</a></li>
-            <li><a href="Courses.html">Courses</a></li>
-            <li><a href="Contact.html">Contact</a></li>
-        </ul>
-        </nav>
-    </header>
+<body class="font-sans text-gray-800">
 
-    <main>home page
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </main>
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <!-- Logo slides in from left, text from right -->
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png"
+                     alt="KTCS Logo" class="h-12 w-auto slide-left">
+                <span class="text-xl font-bold text-white slide-right">
+                    Kriti – The Concept School
+                </span>
+            </div>
+
+            <!-- Nav links drop down one by one -->
+            <ul class="hidden md:flex items-center gap-8 font-medium text-white">
+                <li class="slide-down" style="animation-delay: 0.1s"><a href="sample.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li class="slide-down" style="animation-delay: 0.2s"><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li class="slide-down" style="animation-delay: 0.3s"><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li class="slide-down" style="animation-delay: 0.4s"><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li class="slide-down" style="animation-delay: 0.5s"><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li class="slide-down" style="animation-delay: 0.6s">
+                    <a href="Login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">
+                        Login
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav> 
+
+    <!-- HERO SECTION -->
+    <section style="background-image: url('Assets/images/Welcome_2.jpeg')"
+             class="relative min-h-[120vh] bg-cover bg-center bg-no-repeat flex items-center justify-center text-white">
+
+        <div class="absolute inset-0 bg-[#04192f] opacity-25"></div>
+
+        <div class="relative z-10 text-center px-6 max-w-4xl mt-20">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-white reveal">
+                Where Concepts <br>
+                <span class="text-accent">Come Alive</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-200 mb-10 max-w-2xl mx-auto reveal" style="transition-delay: 0.2s">
+                Quality education built on understanding, not memorisation.
+                Join KTCS and discover how learning was meant to feel.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay: 0.4s">
+                <a href="Courses.html" class="bg-accent text-white px-8 py-4 rounded-full text-lg font-bold hover:scale-105 transition">
+                    Explore Courses
+                </a>
+                <a href="Contact.html" class="bg-red-700 border-2 border-white text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white hover:text-primary transition">
+                    Book a Visit
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+            <!-- Left: image slides in from left -->
+            <div class="reveal-left">
+                <img src="Assets/images/Back_img.jpg"
+                     alt="School" class="rounded-2xl shadow-lg w-full object-cover h-80">
+            </div>
+
+            <!-- Right: text slides in from right -->
+            <div class="reveal-right">
+                <h2 class="text-3xl font-bold text-primary mb-4">
+                    A safe space for learning, growth and discovery
+                </h2>
+                <p class="text-gray-600 leading-relaxed mb-6">
+                    At Kriti – The Concept School, we believe education is more than 
+                    marks and memorisation. Our approach builds deep understanding, 
+                    curiosity, and confidence in every student — preparing them not 
+                    just for exams, but for life.
+                </p>
+                <a id="km" href="About_us.html" class="inline-block bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-accent transition">
+                    Know More
+                </a>
+            </div>
+       
+        </div>
+    </section>
+    <section class="pt-10 bg-gradient-to-br from-primary to-blue-800">
+            <h1 class="reveal-right" style="color: white; font-family:'Times New Roman'; font-weight: bold; text-align:center; font-size:30px">
+                GALLERY
+            </h1><br><br>
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 gap-12 items-center">
+                <div class="reveal-left hover:scale-105 transition">
+                    <a href="Sports.html"><img src="Assets/images/Sports.jpeg"
+                         alt="School" class="rounded-2xl shadow-lg w-full object-cover h-80">
+                    </a><br>
+                    <h3 class="gallery_title">SPORTS</h3>
+                </div>
+                <div class="reveal-right hover:scale-105 transition">
+                    <a href="Academics.html"><img src="Assets/images/Acad.jpeg"
+                         alt="School" class="rounded-2xl shadow-lg w-full object-cover h-80">
+                    </a><br>
+                    <h3 class="gallery_title">ACADEMICS</h3> 
+                </div>
+            </div>
+    </section>
+    <section class="pt-10 bg-gradient-to-br from-primary to-blue-800">
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 gap-12 items-center">
+                <div class="reveal-left hover:scale-105 transition">
+                    <a href="Events.html"><img src="Assets/images/Events_cover.jpeg"
+                         alt="School" class="rounded-2xl shadow-lg w-full object-cover h-80">
+                    </a><br>
+                    <h3 class="gallery_title">EVENTS</h3>
+                </div>
+                <div class="reveal-right hover:scale-105 transition">
+                    <a href="Festivals.html"><img src="Assets/images/Festival_cover.jpeg"
+                         alt="School" class="rounded-2xl shadow-lg w-full object-cover h-80">
+                    </a><br>
+                    <h3 class="gallery_title">FESTIVALS</h3>
+                </div>
+            </div>
+    </section>
+    <section class="py-2 bg-[#04192f] items-right flex justify-end pr-5 gap-3 overflow-hidden">
+            <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+            <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+            <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+            <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
+    <section class="py-4 bg-[#04192f]">
+
+    <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+    <div class="reveal-left flex-shrink-0">
+        <img src="Assets/images/KTCS_logo-removebg-preview.png"
+             alt="KTCS Logo"
+             class="h-52 w-auto">
+    </div>
+    <div class="reveal-righttext-center md:text-left text-gray-300 space-y-2">
+        <p>
+            &copy; 2026 Kriti – The Concept School. All rights reserved.
+        </p>
+        <p>
+            <a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6"
+               target="_blank"
+               class="hover:text-accent transition">
+                Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055
+            </a>
+        </p>
+        <p>Email: ktcs.school@gmail.com</p>
+        <p>Phone: +91 99497 89922</p>
+        <p class="text-sm text-gray-400 pt-2">
+            Designed & Developed by Yashvardhan
+        </p>
+    </div>
+    </div>
+    </section>
 </body>
 </html>

@@ -1,25 +1,102 @@
-body{
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
     margin: 0;
     padding: 0;
 }
-div{
-    display: flex;
-    align-items: center;   /* vertically aligns logo and text */
-    justify-content: center; /* centers whole section */
-    gap: 20px; /* space between logo and title */
-    margin-top: 30px;
-    padding: 0px;
-    margin: 0px;
-    background-color: #04192f;
+
+a, a:link, a:visited, a:hover, a:active {
+    color: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
-h1{
-    font-size: 50px;
-    color: white;
-    margin: 0;
+* { -webkit-tap-highlight-color: transparent; }
+
+@keyframes slideLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
 
-img{
-    height: 80px;
-    padding: 10px;
+@keyframes slideRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.slide-left {
+    animation: slideLeft 0.7s ease forwards;
+}
+
+.slide-right {
+    animation: slideRight 0.7s ease forwards;
+    animation-delay: 0.2s;
+    opacity: 0;
+}
+
+.slide-down {
+    animation: slideDown 0.5s ease forwards;
+    opacity: 0;
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-left.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-right.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+#km{
+    color: white
+}
+
+.gallery_title{
+    text-align: center;
+    font-family: "times new roman", serif;
+    padding-right:2rem;
+    font-weight: bold;
+    font-size: 2rem;
+    color: goldenrod;
+    margin-bottom: 0.5rem;
+}
+
+/* closed state */
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+
+/* open state — JS adds this class */
+.accordion-content.open {
+    max-height: 300px;
 }

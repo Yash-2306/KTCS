@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admissions - Kriti The Concept School</title>
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
+    <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent: '#F5A623',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="sample.js" defer></script>
+</head>
+<body class="font-sans text-gray-800 bg-gray-50">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-12 w-auto slide-left">
+                <span class="text-xl font-bold text-white slide-right">Kriti – The Concept School</span>
+            </div>
+            <ul class="hidden md:flex items-center gap-8 font-medium text-white">
+                <li class="slide-down" style="animation-delay:0.1s"><a href="sample.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li class="slide-down" style="animation-delay:0.2s"><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li class="slide-down" style="animation-delay:0.3s"><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li class="slide-down" style="animation-delay:0.4s"><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li class="slide-down" style="animation-delay:0.5s"><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li class="slide-down" style="animation-delay:0.6s">
+                    <a href="Login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- MARQUEE BAR -->
+    <div class="fixed top-[72px] w-full bg-red-600 py-3 overflow-hidden z-40 text-center">
+        <p class="marquee-text text-white font-bold text-lg tracking-widest">
+            🎉 ADMISSIONS OPEN 2025–26 &nbsp;&nbsp;&nbsp;&nbsp;
+            ✅ LIMITED SEATS AVAILABLE &nbsp;&nbsp;&nbsp;&nbsp;
+            📞 CALL US: +91 99497 89922 &nbsp;&nbsp;&nbsp;&nbsp;
+        </p>
+    </div>
+
+    <!-- HERO -->
+    <section style="background-image: url('Assets/images/Back_img.jpg')"
+             class="relative min-h-[50vh] bg-cover bg-center flex items-center justify-center text-white mt-[112px]">
+        <div class="absolute inset-0 bg-[#04192f] opacity-55"></div>
+        <div class="relative z-10 text-center px-6">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white reveal">
+                Begin Your Journey
+            </h1>
+            <p class="text-blue-200 mt-4 text-xl reveal" style="transition-delay:0.2s">
+                Admissions open for the academic year 2025–26
+            </p>
+            <a href="Contact.html"
+               class="inline-block mt-8 bg-accent text-white px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition reveal"
+               style="transition-delay:0.4s">
+                Apply Now
+            </a>
+        </div>
+    </section>
+
+    <!-- PAMPHLET + WHY JOIN -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+
+            <!-- Left: School Pamphlet Image -->
+            <div class="reveal-left">
+                <img src="Assets/images/pamphlet.jpg"
+                     alt="School Pamphlet"
+                     class="rounded-2xl shadow-2xl w-full object-cover">
+                <p class="text-center text-gray-400 text-sm mt-3">
+                    Kriti – The Concept School Prospectus 2025–26
+                </p>
+            </div>
+
+            <!-- Right: Why Join Us -->
+            <div class="reveal-right">
+                <h2 class="text-4xl font-bold text-primary mb-4"
+                    style="font-family:'Times New Roman'">
+                    Why Choose Kriti?
+                </h2>
+                <p class="text-gray-500 mb-8 text-lg">
+                    We don't just prepare students for exams — we prepare them for life.
+                </p>
+
+                <ul class="space-y-5">
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.1s">
+                        <span class="text-accent text-2xl mt-1">✦</span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Small Batch Sizes</h3>
+                            <p class="text-gray-600">Every student gets personal attention from our teachers — no one gets left behind.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.2s">
+                        <span class="text-accent text-2xl mt-1">✦</span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Experienced Faculty</h3>
+                            <p class="text-gray-600">Our teachers are passionate educators with years of experience in concept-based teaching.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.3s">
+                        <span class="text-accent text-2xl mt-1">✦</span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Strong Academic Results</h3>
+                            <p class="text-gray-600">Consistently high board results with students achieving distinction year after year.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.4s">
+                        <span class="text-accent text-2xl mt-1">✦</span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Holistic Development</h3>
+                            <p class="text-gray-600">Sports, arts, cultural events and leadership programs alongside academics.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.5s">
+                        <span class="text-accent text-2xl mt-1">✦</span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Safe & Nurturing Environment</h3>
+                            <p class="text-gray-600">A warm, inclusive school community where every child thrives with confidence.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.6s">
+                        <span class="text-accent text-2xl mt-1">✦</span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Affordable Fee Structure</h3>
+                            <p class="text-gray-600">Quality education that doesn't compromise on value or accessibility.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- STATS ROW -->
+    <section class="py-16 bg-primary">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
+            <div class="reveal">
+                <p class="text-5xl font-extrabold text-accent">300+</p>
+                <p class="text-white mt-2 font-medium">Students Enrolled</p>
+            </div>
+            <div class="reveal" style="transition-delay:0.1s">
+                <p class="text-5xl font-extrabold text-accent">10+</p>
+                <p class="text-white mt-2 font-medium">Expert Teachers</p>
+            </div>
+            <div class="reveal" style="transition-delay:0.2s">
+                <p class="text-5xl font-extrabold text-accent">7+</p>
+                <p class="text-white mt-2 font-medium">Years of Excellence</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMISSION PROCESS -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold text-primary mb-4 reveal"
+                style="font-family:'Times New Roman'">
+                Admission Process
+            </h2>
+            <p class="text-gray-500 mb-12 reveal" style="transition-delay:0.1s">
+                Simple, transparent and hassle-free
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="reveal bg-white rounded-2xl shadow-md p-8" style="transition-delay:0.1s">
+                    <div class="text-5xl font-extrabold text-accent mb-4">01</div>
+                    <h3 class="text-xl font-bold text-primary mb-2">Walk In / Call Us</h3>
+                    <p class="text-gray-600">Visit us at school or call +91 99497 89922 to schedule a meeting with our admissions team.</p>
+                </div>
+                <div class="reveal bg-white rounded-2xl shadow-md p-8" style="transition-delay:0.2s">
+                    <div class="text-5xl font-extrabold text-accent mb-4">02</div>
+                    <h3 class="text-xl font-bold text-primary mb-2">Fill the Form</h3>
+                    <p class="text-gray-600">Complete the admission form with student details. Our team will guide you through every step.</p>
+                </div>
+                <div class="reveal bg-white rounded-2xl shadow-md p-8" style="transition-delay:0.3s">
+                    <div class="text-5xl font-extrabold text-accent mb-4">03</div>
+                    <h3 class="text-xl font-bold text-primary mb-2">Confirm & Join</h3>
+                    <p class="text-gray-600">Submit documents, complete fee payment and your child becomes part of the KTCS family.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section class="py-16 bg-accent">
+        <div class="max-w-4xl mx-auto px-6 text-center reveal">
+            <h2 class="text-4xl font-extrabold text-white mb-4">
+                Seats are filling fast — don't miss out!
+            </h2>
+            <p class="text-white text-lg mb-8 opacity-90">
+                Contact us today and give your child the education they deserve.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="Contact.html"
+                   class="bg-white text-accent px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition">
+                    Contact Us
+                </a>
+                <a href="tel:+919949789922"
+                   class="border-2 border-white text-white px-10 py-4 rounded-full text-lg font-bold hover:bg-white hover:text-accent transition">
+                    Call Now
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOCIAL STRIP -->
+    <section class="py-2 bg-[#04192f] flex justify-end pr-5 gap-3 overflow-hidden">
+        <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+        <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
+
+    <!-- FOOTER -->
+    <section class="py-4 bg-[#04192f]">
+        <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+            <div class="reveal-left flex-shrink-0">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-52 w-auto">
+            </div>
+            <div class="reveal-right text-center md:text-left text-gray-300 space-y-2">
+                <p>&copy; 2026 Kriti – The Concept School. All rights reserved.</p>
+                <p><a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6" target="_blank" class="hover:text-accent transition">
+                    Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055
+                </a></p>
+                <p>Email: ktcs.school@gmail.com</p>
+                <p>Phone: +91 99497 89922</p>
+                <p class="text-sm text-gray-400 pt-2">Designed & Developed by Yashvardhan</p>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,29 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        a { color: inherit; -webkit-tap-highlight-color: transparent; }
+        a:visited { color: inherit; }
+        a:active { color: inherit; }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kriti - The Concept School</title>
-    <link rel="icon" type="img/png" href="KTCS_logo-removebg-preview.png">
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
     <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent:  '#F5A623',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="sample.js" defer></script>
 </head>
-<body>
-        <div>
-            <img src="KTCS_logo-removebg-preview.png" alt="KTCS Logo" height="150">
-            <h1>Kriti - The Concept School</h1>
+<body class="font-sans text-gray-800">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" 
+                     alt="KTCS Logo" class="h-12 w-auto">
+                <span class="text-xl font-bold text-white">
+                    Kriti – The Concept School
+                </span>
+            </div>
+
+            <ul class="hidden md:flex items-center gap-8 text-white font-medium">
+                <li><a href="sample.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li>
+                    <a href="Login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">
+                        Login
+                    </a>
+                </li>
+            </ul>
         </div>
-        <header>
-        <nav class="navbar">
-            <ul>
-            <li><a href="sample.html">Home</a></li>
-            <li><a href="About_us.html">About Us</a></li>
-            <li><a href="Courses.html">Courses</a></li>
-            <li><a href="Contact.html">Contact</a></li>
-        </ul>
-        </nav>
-    </header>
-        <main>About us page
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </main>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section style="background-image: url('Assets/images/Events/Events_ (8).jpeg')"
+             class="relative min-h-[50vh] bg-cover bg-center bg-no-repeat flex items-center justify-center text-white">
+        <div class="absolute inset-0 bg-[#04192f] opacity-50"></div>
+            <div class="relative z-10 text-center px-6 max-w-4xl mt-20">
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-white reveal">
+                ABOUT US<br>
+            </h1>
+            </div>
+        </div>
+    </section>
+    <section class="reveal-left bg-[#f6bfa4] grid grid-cols-3 gap-6 max-w-7xl mx-auto pt-20 pb-20 px-6">
+        <div class="col-span-3 md:col-span-1">
+            <h1 class="text-3xl  text-6xl mb-4 text-TimesNewRoman pl-10">
+                One of the best educational institutions in the city of Hyderabad.
+            </h1>
+        </div>
+        <div class="col-span-3 md:col-span-2">
+            <p class="text-lg text-gray-700 leading-relaxed text-justify">
+                At Kriti – The Concept School, we are dedicated to providing a nurturing and inspiring environment for students to thrive academically, socially, and emotionally. Our mission is to empower students with the knowledge, skills, and values they need to succeed in an ever-changing world. We believe in fostering a love for learning, critical thinking, creativity, and collaboration among our students. Our experienced faculty members are committed to delivering high-quality education that caters to the individual needs of each student. We strive to create a supportive community where students can explore their passions, develop their talents, and become responsible global citizens.
+                Beyond academics, we encourage students to participate in a wide range of co-curricular and extracurricular activities that help build confidence, leadership, teamwork, and communication skills. From sports and arts to innovation and cultural programs, we ensure that every child gets the opportunity to discover and nurture their unique potential.
+                At Kriti – The Concept School, we understand that education is not just about achieving excellent results, but also about shaping character and preparing students for life beyond the classroom.
+            </p>
+    </section>
+    <section class="reveal-left bg-[#f6bfa4] max-w-7xl mx-auto px-6">
+    <div>
+     <h1 class="text-6xl mb-4 pl-10"
+        style="font-family:'Times New Roman';">
+        Our Vision
+     </h1>
+     <p class="text-2xl text-gray-700 leading-relaxed text-justify">
+        To be a leading educational institution that inspires and empowers students to become lifelong learners, critical thinkers, and responsible global citizens.
+     </p>
+     </div>
+     <div class="pt-20">
+     <h1 class="text-6xl mb-4 pl-10"
+        style="font-family:'Times New Roman';">
+        Our Mission
+     </h1>
+     <p class="text-2xl text-gray-700 leading-relaxed text-justify">
+        Rooted in rich heritage and values, KTCS aims to provide the students with:
+     </p>
+     </div>
+     <ul class="py-10 space-y-5 list-disc pl-10">
+        <li>
+        <h3 class="text-2xl mb-2"
+        style="font-family:'Times New Roman';">
+            Moral Values
+        </h3>
+        <p class="text-xl text-gray-700 leading-relaxed text-justify pl-5">
+            Honesty, integrity and good judgement.
+        </p>
+        </li>
+        <li>
+        <h3 class="text-2xl mb-2"
+        style="font-family:'Times New Roman';">
+            Basic Skills
+        </h3>
+        <p class="text-xl text-gray-700 leading-relaxed text-justify pl-5">
+            Academic, creative, social and personal.
+        </p>
+        </li>
+        <li class="text-xl"
+        style="font-family:'Times New Roman';">
+            Tolerance and respect for others.
+        </li>
+        <li class="text-xl"
+        style="font-family:'Times New Roman';">
+            A passion for continuous learning.
+        </li>
+    </ul>
+    </section>
+    
+    <section class="py-2 bg-[#04192f] items-right flex justify-end pr-5 gap-3 overflow-hidden">
+            <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+            <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+            <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+            <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
+    <section class="py-4 bg-[#04192f]">
+
+    <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+    <div class="reveal-left flex-shrink-0">
+        <img src="Assets/images/KTCS_logo-removebg-preview.png"
+             alt="KTCS Logo"
+             class="h-52 w-auto">
+    </div>
+    <div class="reveal-righttext-center md:text-left text-gray-300 space-y-2">
+        <p>
+            &copy; 2026 Kriti – The Concept School. All rights reserved.
+        </p>
+        <p>
+            <a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6"
+               target="_blank"
+               class="hover:text-accent transition">
+                Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055
+            </a>
+        </p>
+        <p>Email: ktcs.school@gmail.com</p>
+        <p>Phone: +91 99497 89922</p>
+        <p class="text-sm text-gray-400 pt-2">
+            Designed & Developed by Yashvardhan
+        </p>
+    </div>
+    </div>
+    </section>
 </body>
 </html>

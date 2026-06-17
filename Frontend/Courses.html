@@ -1,29 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        a { color: inherit; -webkit-tap-highlight-color: transparent; }
+        a:visited { color: inherit; }
+        a:active { color: inherit; }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kriti - The Concept School</title>
-    <link rel="icon" type="img/png" href="KTCS_logo-removebg-preview.png">
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
     <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent:  '#F5A623',
+                    }
+                }
+            } 
+        }
+    </script>
+    <script src="sample.js" defer></script>
 </head>
-<body>
-        <div>
-            <img src="KTCS_logo-removebg-preview.png" alt="KTCS Logo" height="150">
-            <h1>Kriti - The Concept School</h1>
+<body class="font-sans text-gray-800">
+
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" 
+                     alt="KTCS Logo" class="h-12 w-auto">
+                <span class="text-xl font-bold text-white">
+                    Kriti – The Concept School
+                </span>
+            </div>
+
+            <ul class="hidden md:flex items-center gap-8 text-white font-medium">
+                <li><a href="sample.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li>
+                    <a href="Login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">
+                        Login
+                    </a>
+                </li>
+            </ul>
         </div>
-        <header>
-        <nav class="navbar">
-            <ul>
-            <li><a href="sample.html">Home</a></li>
-            <li><a href="About_us.html">About Us</a></li>
-            <li><a href="Courses.html">Courses</a></li>
-            <li><a href="Contact.html">Contact</a></li>
-        </ul>
-        </nav>
-    </header>
-        <main>courses page
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </main>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section style="background-image: url('Assets/images/Events/Events_ (8).jpeg')"
+         class="relative min-h-[50vh] bg-cover bg-center bg-no-repeat flex items-center justify-center text-white">
+
+    <div class="absolute inset-0 bg-[#04192f] opacity-50"></div>
+
+    <div class="relative z-10 text-center px-6 max-w-4xl mt-20">
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-white reveal">
+            COURSES
+        </h1>
+    </div>
+
+</section>
+
+
+<section class="reveal-left bg-[#f6bfa4] py-20 px-6">
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Mathematics -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/maths.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    Mathematics
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        Mathematics at KTCS focuses on conceptual clarity,
+                        analytical thinking, and real-world problem solving.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: NCERT / S. Chand
+                    </p>
+                </div>
+            </div>
+
+        </div>
+<!--we have the courses page built we are done-->
+
+        <!-- Science -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/science.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    Science
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        Science education encourages curiosity, experimentation,
+                        observation, and practical learning experiences.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: NCERT / Pearson
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- English -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/english.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    English
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        English curriculum develops communication, comprehension,
+                        writing, grammar, and literary appreciation skills.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: NCERT / Oxford
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Hindi -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/hindi.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    Hindi
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        Hindi classes strengthen language fluency, grammar,
+                        reading comprehension, and cultural understanding.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: NCERT
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Telugu -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/telugu.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    Telugu
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        Telugu curriculum enhances regional language proficiency,
+                        literature appreciation, and communication skills.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: SCERT Telangana
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- IIT Foundations -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/iit.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    IIT Foundations
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        IIT Foundation program develops advanced aptitude,
+                        logical reasoning, and competitive exam preparation skills.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: MTG / Arihant
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Social Sciences -->
+        <div class="accordion-item rounded-2xl overflow-hidden shadow-lg">
+
+            <button class="accordion-btn w-full relative h-24 bg-cover bg-center flex items-center justify-between px-6"
+                    style="background-image: url('Assets/images/social.jpg')">
+
+                <div class="absolute inset-0 bg-black opacity-40"></div>
+
+                <span class="relative z-10 text-white text-2xl font-bold">
+                    Social Sciences
+                </span>
+
+                <span class="plus-icon relative z-10 text-white text-3xl font-bold">
+                    +
+                </span>
+
+            </button>
+
+            <div class="accordion-content bg-white px-6">
+                <div class="py-4">
+                    <p class="text-gray-600 leading-relaxed mb-2">
+                        Social Sciences helps students understand history,
+                        geography, civics, economics, and society critically.
+                    </p>
+
+                    <p class="text-primary font-semibold">
+                        Publisher: NCERT
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+    
+    <section class="py-2 bg-[#04192f] items-right flex justify-end pr-5 gap-3 overflow-hidden">
+            <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+            <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+            <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+            <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
+    <section class="py-4 bg-[#04192f]">
+
+    <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+    <div class="reveal-left flex-shrink-0">
+        <img src="Assets/images/KTCS_logo-removebg-preview.png"
+             alt="KTCS Logo"
+             class="h-52 w-auto">
+    </div>
+    <div class="reveal-righttext-center md:text-left text-gray-300 space-y-2">
+        <p>
+            &copy; 2026 Kriti – The Concept School. All rights reserved.
+        </p>
+        <p>
+            <a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6"
+               target="_blank"
+               class="hover:text-accent transition">
+                Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055
+            </a>
+        </p>
+        <p>Email: ktcs.school@gmail.com</p>
+        <p>Phone: +91 99497 89922</p>
+        <p class="text-sm text-gray-400 pt-2">
+            Designed & Developed by Yashvardhan
+        </p>
+    </div>
+    </div>
+    </section>
 </body>
 </html>

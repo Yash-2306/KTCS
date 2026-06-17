@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events - Kriti The Concept School</title>
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
+    <link rel="stylesheet" href="sample.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#1E3A5F', accent: '#F5A623' } } }
+        }
+    </script>
+    <script src="sample.js" defer></script>
+</head>
+<body class="font-sans text-gray-800 bg-[#04192f]">
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-12 w-auto slide-left">
+                <span class="text-xl font-bold text-white slide-right">Kriti – The Concept School</span>
+            </div>
+            <ul class="hidden md:flex items-center gap-8 font-medium text-white">
+                <li class="slide-down" style="animation-delay:0.1s"><a href="sample.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li class="slide-down" style="animation-delay:0.2s"><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li class="slide-down" style="animation-delay:0.3s"><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li class="slide-down" style="animation-delay:0.4s"><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li class="slide-down" style="animation-delay:0.5s"><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li class="slide-down" style="animation-delay:0.6s">
+                    <a href="login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">Login</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="pt-32 pb-6 bg-[#f6bfa4]">
+        <h1 class="reveal text-4xl font-bold text-center text-[#04192f]">EVENTS</h1>
+    </section>
+
+    <section class="pb-20 px-6 bg-[#f6bfa4]">
+        <div id="events-gallery" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </section>
+
+    <section class="py-2 bg-[#04192f] flex justify-end pr-5 gap-3 overflow-hidden">
+        <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+        <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
+
+    <section class="py-4 bg-[#04192f]">
+        <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+            <div class="reveal-left flex-shrink-0">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-52 w-auto">
+            </div>
+            <div class="reveal-right text-center md:text-left text-gray-300 space-y-2">
+                <p>&copy; 2026 Kriti – The Concept School. All rights reserved.</p>
+                <p><a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6" target="_blank" class="hover:text-accent transition">Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055</a></p>
+                <p>Email: ktcs.school@gmail.com</p>
+                <p>Phone: +91 99497 89922</p>
+                <p class="text-sm text-gray-400 pt-2">Designed & Developed by Yashvardhan</p>
+            </div>
+        </div>
+    </section>
+</body>
+</html> 
