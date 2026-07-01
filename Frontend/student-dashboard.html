@@ -1,0 +1,568 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Kriti The Concept School</title>
+    <meta name="description" content="Student portal for Kriti The Concept School — view report cards and attendance">
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase Auth (Compat SDK) -->
+    <script src="auth.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (localStorage.getItem('role') !== 'STUDENT') window.location.href = 'Login.html';
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#1E3A5F', accent: '#F5A623' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+
+        #sidebar {
+            width: 240px; min-height: 100vh; background: #1E3A5F;
+            position: fixed; left: 0; top: 0;
+            display: flex; flex-direction: column; z-index: 40;
+        }
+        #main-content { margin-left: 240px; min-height: 100vh; padding: 28px; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 20px; color: #94a3b8; font-size: 13.5px;
+            font-weight: 500; border-radius: 8px; margin: 2px 10px;
+            cursor: pointer; transition: background 0.15s, color 0.15s;
+            border: none; background: none;
+            width: calc(100% - 20px); text-align: left;
+        }
+        .nav-link:hover  { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+        .nav-link.active { background: rgba(245,166,35,0.18); color: #F5A623; font-weight: 600; }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead tr { background: #f8fafc; }
+        .data-table thead th { padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        .data-table tbody tr { border-bottom: 1px solid #f1f5f9; }
+        .data-table tbody tr:hover { background: #f8fafc; }
+        .data-table tbody td { padding: 13px 16px; font-size: 13.5px; color: #374151; }
+
+        .form-input { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 9px 13px; font-size: 13.5px; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif; }
+        .form-input:focus { border-color: #1E3A5F; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 5px; }
+
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
+        .btn-primary { background: #1E3A5F; color: white; }
+        .btn-primary:hover { background: #F5A623; }
+        .btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 6px; }
+
+        .loading-row td { text-align: center; color: #94a3b8; padding: 40px; font-size: 13px; }
+        .error-banner { background: #fee2e2; color: #dc2626; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+        /* Grade badges */
+        .grade { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+        .grade-Ap { background:#dcfce7; color:#15803d; }
+        .grade-A  { background:#d1fae5; color:#065f46; }
+        .grade-B  { background:#dbeafe; color:#1d4ed8; }
+        .grade-C  { background:#fef9c3; color:#854d0e; }
+        .grade-D  { background:#ffedd5; color:#c2410c; }
+        .grade-F  { background:#fee2e2; color:#b91c1c; }
+
+        /* Calendar */
+        .cal-cell { aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+    <div style="padding:22px 20px 16px; border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS" style="height:36px;width:auto;">
+            <div>
+                <div style="color:white;font-size:13px;font-weight:700;line-height:1.2;">KTCS</div>
+                <div style="color:#94a3b8;font-size:10.5px;">Student Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <nav style="flex:1;padding:14px 0;">
+        <div style="padding:0 10px 6px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em;margin-top:6px;">My Academics</div>
+        <button class="nav-link active" onclick="switchPanel('report')" id="nav-report">
+            <i data-lucide="scroll-text" style="width:17px;height:17px;"></i>
+            My Report Card
+        </button>
+        <button class="nav-link" onclick="switchPanel('attendance')" id="nav-attendance">
+            <i data-lucide="calendar-days" style="width:17px;height:17px;"></i>
+            My Attendance
+        </button>
+    </nav>
+
+    <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:34px;height:34px;background:rgba(245,166,35,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="graduation-cap" style="width:16px;height:16px;color:#F5A623;"></i>
+            </div>
+            <div>
+                <div id="sidebar-name" style="color:white;font-size:12.5px;font-weight:600;">Student</div>
+                <div style="color:#64748b;font-size:10.5px;">Student Account</div>
+            </div>
+        </div>
+        <button onclick="handleLogout()" class="btn btn-sm" style="width:100%;background:rgba(239,68,68,0.15);color:#f87171;justify-content:center;">
+            <i data-lucide="log-out" style="width:13px;height:13px;"></i> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main-content">
+
+    <div style="margin-bottom:24px;">
+        <h1 id="page-title" class="text-2xl font-extrabold text-gray-800">My Report Card</h1>
+        <p id="page-subtitle" class="text-sm text-gray-500 mt-1">View your marks, grades, and performance</p>
+    </div>
+
+    <!-- ── PANEL 1: REPORT CARD ────────────────────────────────── -->
+    <div id="panel-report" class="panel active">
+
+        <!-- Exam selector -->
+        <div class="card" style="padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <label class="form-label" style="margin:0;white-space:nowrap;">Exam Type:</label>
+            <select id="report-exam-type" class="form-input" style="width:auto;" onchange="loadReportCard()">
+                <option value="MID_TERM">Mid-Term</option>
+                <option value="FINAL">Final Exam</option>
+                <option value="UNIT_TEST">Unit Test</option>
+            </select>
+            <div style="display:flex;gap:8px;margin-left:auto;">
+                <button onclick="loadReportCard()" class="btn btn-sm btn-primary">
+                    <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Refresh
+                </button>
+                <button onclick="printReportCard()" class="btn btn-sm" style="background:#f0fdf4;color:#15803d;">
+                    <i data-lucide="printer" style="width:12px;height:12px;"></i> Print / Save PDF
+                </button>
+            </div>
+        </div>
+
+        <div id="report-error" class="hidden"></div>
+
+        <!-- Summary cards (shown after load) -->
+        <div id="report-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5 hidden">
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Total Score</p>
+                <p id="rpt-total" style="font-size:26px;font-weight:800;color:#1E3A5F;margin-top:4px;">-</p>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Percentage</p>
+                <p id="rpt-pct" style="font-size:26px;font-weight:800;color:#1E3A5F;margin-top:4px;">-</p>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Grade</p>
+                <p id="rpt-grade" style="font-size:26px;font-weight:800;color:#1E3A5F;margin-top:4px;">-</p>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Result</p>
+                <p id="rpt-result" style="font-size:26px;font-weight:800;margin-top:4px;">-</p>
+            </div>
+        </div>
+
+        <!-- Subjects table -->
+        <div class="card">
+            <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;">
+                <h2 class="font-bold text-gray-800">Subject-wise Marks</h2>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Subject</th><th style="text-align:center;">Marks Obtained</th><th style="text-align:center;">Max Marks</th><th style="text-align:center;">Percentage</th><th style="text-align:center;">Grade</th></tr>
+                    </thead>
+                    <tbody id="report-table-body">
+                        <tr class="loading-row"><td colspan="5">Loading report card...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 2: ATTENDANCE ─────────────────────────────────── -->
+    <div id="panel-attendance" class="panel">
+
+        <!-- Overall stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;">Attendance %</p>
+                <p id="att-pct" style="font-size:26px;font-weight:800;color:#1E3A5F;margin-top:4px;">-</p>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#22c55e;text-transform:uppercase;letter-spacing:.05em;">Present</p>
+                <p id="att-present" style="font-size:26px;font-weight:800;color:#15803d;margin-top:4px;">0</p>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#ef4444;text-transform:uppercase;letter-spacing:.05em;">Absent</p>
+                <p id="att-absent" style="font-size:26px;font-weight:800;color:#dc2626;margin-top:4px;">0</p>
+            </div>
+            <div class="card" style="padding:16px;text-align:center;">
+                <p style="font-size:10px;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:.05em;">Leave</p>
+                <p id="att-leave" style="font-size:26px;font-weight:800;color:#7c3aed;margin-top:4px;">0</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Calendar -->
+            <div class="card" style="padding:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <button onclick="changeMonth(-1)" class="btn btn-sm" style="background:#f1f5f9;color:#374151;">
+                        <i data-lucide="chevron-left" style="width:14px;height:14px;"></i>
+                    </button>
+                    <h2 id="cal-month-label" class="font-bold text-gray-800 text-base">Loading...</h2>
+                    <button onclick="changeMonth(1)" class="btn btn-sm" style="background:#f1f5f9;color:#374151;">
+                        <i data-lucide="chevron-right" style="width:14px;height:14px;"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-7 gap-1.5 text-center" style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;">
+                    <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                </div>
+                <div id="att-calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
+                <div style="display:flex;gap:12px;margin-top:12px;justify-content:center;font-size:11px;font-weight:700;">
+                    <span style="color:#15803d;">&#9679; Present</span>
+                    <span style="color:#dc2626;">&#9679; Absent</span>
+                    <span style="color:#7c3aed;">&#9679; Leave</span>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="card" style="overflow:hidden;">
+                <div style="padding:16px 20px;border-bottom:1px solid #f1f5f9;">
+                    <h2 class="font-bold text-gray-800">Attendance Log</h2>
+                </div>
+                <div style="overflow-y:auto;max-height:360px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Date</th><th style="text-align:center;">Status</th></tr>
+                        </thead>
+                        <tbody id="att-history-body">
+                            <tr class="loading-row"><td colspan="2">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const API_BASE = 'http://localhost:8080';
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let globalAttendanceHistory = [];
+let currentCalMonth = new Date().getMonth() + 1;
+let currentCalYear  = new Date().getFullYear();
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.onload = function() {
+    lucide.createIcons();
+    document.getElementById('sidebar-name').textContent = localStorage.getItem('fullName') || 'Student';
+    loadReportCard();
+};
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+const panelTitles = {
+    report:     { title: 'My Report Card', sub: 'View your marks, grades, and performance' },
+    attendance: { title: 'My Attendance',  sub: 'Track your attendance history and monthly calendar' }
+};
+
+function switchPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    const meta = panelTitles[id];
+    document.getElementById('page-title').textContent    = meta.title;
+    document.getElementById('page-subtitle').textContent = meta.sub;
+    lucide.createIcons();
+    if (id === 'attendance') loadAttendanceStats();
+}
+
+function handleLogout() {
+    localStorage.clear();
+    window.location.href = 'Login.html';
+}
+
+function showError(containerId, msg) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = `<div class="error-banner"><i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>${msg}</div>`;
+    el.classList.remove('hidden');
+    lucide.createIcons();
+}
+
+// ─── PANEL 1: REPORT CARD ─────────────────────────────────────────────────────
+async function loadReportCard() {
+    const studentId = localStorage.getItem('userId');
+    const examType  = document.getElementById('report-exam-type').value;
+
+    document.getElementById('report-table-body').innerHTML = '<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+    document.getElementById('report-summary').classList.add('hidden');
+    document.getElementById('report-error').classList.add('hidden');
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/marks/student/${studentId}/report-card?examType=${examType}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        if (!data.subjects || !data.subjects.length) {
+            document.getElementById('report-table-body').innerHTML =
+                '<tr class="loading-row"><td colspan="5">No marks found for this exam type yet.</td></tr>';
+            return;
+        }
+
+        // Summary widgets
+        document.getElementById('report-summary').classList.remove('hidden');
+        document.getElementById('rpt-total').textContent = `${data.totalObtained}/${data.totalMax}`;
+        document.getElementById('rpt-pct').textContent   = `${data.percentage}%`;
+
+        const gradeEl  = document.getElementById('rpt-grade');
+        const resultEl = document.getElementById('rpt-result');
+        gradeEl.textContent = data.grade;
+        resultEl.textContent = data.result;
+
+        // Grade colour
+        const gradeColorMap = { 'A+':'#15803d','A':'#065f46','B':'#1d4ed8','C':'#854d0e','D':'#c2410c','F':'#b91c1c' };
+        gradeEl.style.color = gradeColorMap[data.grade] || '#1E3A5F';
+        resultEl.style.color = data.result === 'PASS' ? '#15803d' : '#dc2626';
+
+        // Subjects table
+        document.getElementById('report-table-body').innerHTML = data.subjects.map(sub => {
+            const pct = sub.maxMarks > 0 ? ((sub.marksObtained / sub.maxMarks) * 100).toFixed(1) : 0;
+            const g   = sub.grade;
+            const cls = { 'A+':'grade-Ap','A':'grade-A','B':'grade-B','C':'grade-C','D':'grade-D','F':'grade-F' }[g] || 'grade-F';
+            return `<tr>
+                <td class="font-semibold">${sub.subject}</td>
+                <td style="text-align:center;font-weight:700;">${sub.marksObtained}</td>
+                <td style="text-align:center;color:#94a3b8;">${sub.maxMarks}</td>
+                <td style="text-align:center;">${pct}%</td>
+                <td style="text-align:center;"><span class="grade ${cls}">${g}</span></td>
+            </tr>`;
+        }).join('');
+
+    } catch {
+        showError('report-error', 'Could not load report card. Make sure the backend is running.');
+        document.getElementById('report-table-body').innerHTML = '<tr class="loading-row"><td colspan="5">Failed to load.</td></tr>';
+    }
+}
+
+// ─── PANEL 2: ATTENDANCE ──────────────────────────────────────────────────────
+async function loadAttendanceStats() {
+    const studentId = localStorage.getItem('userId');
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/history/${studentId}`);
+        if (!res.ok) throw new Error();
+        globalAttendanceHistory = await res.json();
+
+        const total   = globalAttendanceHistory.length;
+        const present = globalAttendanceHistory.filter(h => h.status === 'PRESENT').length;
+        const absent  = globalAttendanceHistory.filter(h => h.status === 'ABSENT').length;
+        const leave   = globalAttendanceHistory.filter(h => h.status === 'LEAVE').length;
+        const pct     = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+
+        document.getElementById('att-pct').textContent     = `${pct}%`;
+        document.getElementById('att-present').textContent = present;
+        document.getElementById('att-absent').textContent  = absent;
+        document.getElementById('att-leave').textContent   = leave;
+
+        renderCalendarGrid();
+        renderAttendanceLog();
+    } catch {
+        showError('att-calendar', 'Could not load attendance. Check backend connection.');
+    }
+}
+
+function renderCalendarGrid() {
+    const grid    = document.getElementById('att-calendar-grid');
+    const months  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('cal-month-label').textContent = `${months[currentCalMonth-1]} ${currentCalYear}`;
+
+    const firstDow    = new Date(currentCalYear, currentCalMonth - 1, 1).getDay();
+    const daysInMonth = new Date(currentCalYear, currentCalMonth, 0).getDate();
+
+    // Build lookup: "YYYY-MM-DD" → status
+    const attMap = {};
+    globalAttendanceHistory.forEach(h => {
+        // Handle both "YYYY-MM-DD" and full ISO timestamps
+        const dateStr = h.date ? h.date.substring(0, 10) : null;
+        if (dateStr) attMap[dateStr] = h.status;
+    });
+
+    let cells = '';
+    for (let i = 0; i < firstDow; i++) {
+        cells += `<div class="cal-cell" style="background:#f8fafc;"></div>`;
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+        const mm   = String(currentCalMonth).padStart(2, '0');
+        const dd   = String(d).padStart(2, '0');
+        const key  = `${currentCalYear}-${mm}-${dd}`;
+        const stat = attMap[key];
+        let bg = '#f1f5f9'; let color = '#94a3b8';
+        if (stat === 'PRESENT') { bg = '#dcfce7'; color = '#15803d'; }
+        if (stat === 'ABSENT')  { bg = '#fee2e2'; color = '#dc2626'; }
+        if (stat === 'LEAVE')   { bg = '#f3e8ff'; color = '#7c3aed'; }
+        cells += `<div class="cal-cell" style="background:${bg};color:${color};" title="${stat || 'Not marked'}">${d}</div>`;
+    }
+    grid.innerHTML = cells;
+}
+
+function changeMonth(offset) {
+    currentCalMonth += offset;
+    if (currentCalMonth > 12) { currentCalMonth = 1;  currentCalYear++;  }
+    if (currentCalMonth < 1)  { currentCalMonth = 12; currentCalYear--;  }
+    renderCalendarGrid();
+}
+
+function renderAttendanceLog() {
+    const tbody = document.getElementById('att-history-body');
+    const sorted = [...globalAttendanceHistory].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+    });
+
+    if (!sorted.length) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="2">No attendance records found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = sorted.map(h => {
+        const dateStr = h.date ? h.date.substring(0, 10) : '-';
+        const formatted = dateStr !== '-' ? new Date(dateStr + 'T00:00:00').toLocaleDateString('en-IN', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        }) : '-';
+
+        let badgeBg = '#f1f5f9', badgeColor = '#94a3b8';
+        if (h.status === 'PRESENT') { badgeBg = '#dcfce7'; badgeColor = '#15803d'; }
+        if (h.status === 'ABSENT')  { badgeBg = '#fee2e2'; badgeColor = '#dc2626'; }
+        if (h.status === 'LEAVE')   { badgeBg = '#f3e8ff'; badgeColor = '#7c3aed'; }
+
+        return `<tr>
+            <td>${formatted}</td>
+            <td style="text-align:center;">
+                <span style="background:${badgeBg};color:${badgeColor};border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;">${h.status}</span>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// ─── PRINT REPORT CARD ────────────────────────────────────────────────────────
+// Opens a clean printable page in a new browser tab.
+// The student can then press Ctrl+P (or Cmd+P on Mac) and choose "Save as PDF".
+function printReportCard() {
+    const name     = localStorage.getItem('fullName') || 'Student';
+    const userId   = localStorage.getItem('userId');
+    const examType = document.getElementById('report-exam-type').value;
+
+    // Read the summary values already shown on screen
+    const total  = document.getElementById('rpt-total').textContent;
+    const pct    = document.getElementById('rpt-pct').textContent;
+    const grade  = document.getElementById('rpt-grade').textContent;
+    const result = document.getElementById('rpt-result').textContent;
+
+    // Check report card was actually loaded
+    if (total === '-' || total === '') {
+        alert('Please load the report card first by clicking Refresh.');
+        return;
+    }
+
+    // Read the subjects table rows from the DOM
+    const rows = document.getElementById('report-table-body');
+    const tableHTML = rows ? rows.innerHTML : '<tr><td colspan="5">No data</td></tr>';
+
+    const examLabel = {
+        'MID_TERM': 'Mid-Term Examination',
+        'FINAL': 'Final Examination',
+        'UNIT_TEST': 'Unit Test'
+    }[examType] || examType;
+
+    const today = new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' });
+
+    // Build a complete HTML page as a string and open it in a new tab
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Report Card - ${name}</title>
+            <style>
+                body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; color: #1a1a1a; }
+                .header { text-align: center; border-bottom: 3px solid #1E3A5F; padding-bottom: 16px; margin-bottom: 24px; }
+                .school-name { font-size: 24px; font-weight: bold; color: #1E3A5F; }
+                .sub-title { font-size: 13px; color: #555; margin-top: 4px; }
+                .report-title { font-size: 18px; font-weight: bold; margin: 8px 0 0; color: #F5A623; }
+                .student-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
+                .student-info div { background: #f8f9fa; padding: 10px 16px; border-radius: 6px; flex: 1; margin: 0 5px; }
+                .student-info label { display: block; font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 3px; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+                th { background: #1E3A5F; color: white; padding: 10px 14px; text-align: left; font-size: 12px; text-transform: uppercase; }
+                td { padding: 9px 14px; border-bottom: 1px solid #e8e8e8; }
+                tr:nth-child(even) { background: #f8f9fa; }
+                .summary-row { display: flex; gap: 10px; margin-bottom: 20px; }
+                .summary-box { flex: 1; text-align: center; padding: 12px; border-radius: 8px; background: #f1f5f9; }
+                .summary-box label { display: block; font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+                .summary-box span { font-size: 22px; font-weight: bold; color: #1E3A5F; }
+                .footer { text-align: center; font-size: 11px; color: #999; margin-top: 30px; border-top: 1px solid #eee; padding-top: 12px; }
+                @media print { body { margin: 20px; } }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="school-name">Kriti – The Concept School</div>
+                <div class="sub-title">5-31-303, Saibaba Nagar, Suraram, Hyderabad – 500055</div>
+                <div class="report-title">Student Report Card — ${examLabel}</div>
+            </div>
+            <div class="student-info">
+                <div><label>Student Name</label>${name}</div>
+                <div><label>Date Generated</label>${today}</div>
+                <div><label>Exam Type</label>${examLabel}</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th style="text-align:center;">Marks Obtained</th>
+                        <th style="text-align:center;">Max Marks</th>
+                        <th style="text-align:center;">Percentage</th>
+                        <th style="text-align:center;">Grade</th>
+                    </tr>
+                </thead>
+                <tbody>${tableHTML}</tbody>
+            </table>
+            <div class="summary-row">
+                <div class="summary-box"><label>Total Score</label><span>${total}</span></div>
+                <div class="summary-box"><label>Percentage</label><span>${pct}</span></div>
+                <div class="summary-box"><label>Grade</label><span>${grade}</span></div>
+                <div class="summary-box"><label>Result</label><span>${result}</span></div>
+            </div>
+            <div class="footer">
+                This is a computer-generated report card from the KTCS Student Portal.<br>
+                Generated on ${today}
+            </div>
+            <script>window.onload = function() { window.print(); }<\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+</script>
+</body>
+</html>

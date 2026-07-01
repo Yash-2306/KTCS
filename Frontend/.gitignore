@@ -1,0 +1,18 @@
+# ── NEVER upload these ───────────────────────────────────────────────────────
+
+# If you ever add a .env file with API keys or secrets
+.env
+.env.local
+.env.production
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Node modules (if you ever add npm tools)
+node_modules/

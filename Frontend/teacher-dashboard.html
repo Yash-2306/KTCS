@@ -1,0 +1,532 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Kriti The Concept School</title>
+    <meta name="description" content="Teacher portal for Kriti The Concept School — mark attendance and enter student marks">
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Firebase Auth (Compat SDK) -->
+    <script src="auth.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (localStorage.getItem('role') !== 'TEACHER') window.location.href = 'Login.html';
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#1E3A5F', accent: '#F5A623' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+
+        #sidebar {
+            width: 240px; min-height: 100vh; background: #1E3A5F;
+            position: fixed; left: 0; top: 0;
+            display: flex; flex-direction: column; z-index: 40;
+        }
+        #main-content { margin-left: 240px; min-height: 100vh; padding: 28px; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 20px; color: #94a3b8; font-size: 13.5px;
+            font-weight: 500; border-radius: 8px; margin: 2px 10px;
+            cursor: pointer; transition: background 0.15s, color 0.15s;
+            border: none; background: none;
+            width: calc(100% - 20px); text-align: left;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+        .nav-link.active { background: rgba(245,166,35,0.18); color: #F5A623; font-weight: 600; }
+
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead tr { background: #f8fafc; }
+        .data-table thead th { padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        .data-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+        .data-table tbody tr:hover { background: #f8fafc; }
+        .data-table tbody td { padding: 13px 16px; font-size: 13.5px; color: #374151; }
+
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; border: none; }
+        .btn-primary { background: #1E3A5F; color: white; }
+        .btn-primary:hover { background: #F5A623; }
+        .btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 6px; }
+
+        .form-input { width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 9px 13px; font-size: 13.5px; outline: none; transition: border-color 0.2s; font-family: 'Inter', sans-serif; color: #1a202c; }
+        .form-input:focus { border-color: #1E3A5F; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 5px; }
+
+        .loading-row td { text-align: center; color: #94a3b8; padding: 40px; font-size: 13px; }
+        .error-banner { background: #fee2e2; color: #dc2626; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+        .grade-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+    <div style="padding:22px 20px 16px; border-bottom:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS" style="height:36px; width:auto;">
+            <div>
+                <div style="color:white; font-size:13px; font-weight:700; line-height:1.2;">KTCS</div>
+                <div style="color:#94a3b8; font-size:10.5px;">Teacher Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <nav style="flex:1; padding:14px 0;">
+        <div style="padding:0 10px 6px; font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.08em; margin-top:6px;">My Work</div>
+
+        <button class="nav-link active" onclick="switchPanel('attendance')" id="nav-attendance">
+            <i data-lucide="calendar-check" style="width:17px;height:17px;"></i>
+            Mark Attendance
+        </button>
+        <button class="nav-link" onclick="switchPanel('marks')" id="nav-marks">
+            <i data-lucide="file-check" style="width:17px;height:17px;"></i>
+            Enter Marks
+        </button>
+    </nav>
+
+    <div style="padding:14px 16px; border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="width:34px;height:34px;background:rgba(245,166,35,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <i data-lucide="book-open" style="width:16px;height:16px;color:#F5A623;"></i>
+            </div>
+            <div>
+                <div id="sidebar-name" style="color:white;font-size:12.5px;font-weight:600;">Teacher</div>
+                <div style="color:#64748b;font-size:10.5px;">Teaching Staff</div>
+            </div>
+        </div>
+        <button onclick="handleLogout()" class="btn btn-sm" style="width:100%;background:rgba(239,68,68,0.15);color:#f87171;justify-content:center;">
+            <i data-lucide="log-out" style="width:13px;height:13px;"></i> Logout
+        </button>
+    </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main-content">
+
+    <div style="margin-bottom:24px;">
+        <h1 id="page-title" class="text-2xl font-extrabold text-gray-800">Mark Attendance</h1>
+        <p id="page-subtitle" class="text-sm text-gray-500 mt-1">Mark daily attendance for your class</p>
+    </div>
+
+    <!-- ── PANEL 1: ATTENDANCE ─────────────────────────────────── -->
+    <div id="panel-attendance" class="panel active">
+        <div class="card" style="padding:24px;">
+            <!-- Controls -->
+            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px; align-items:flex-end;">
+                <div>
+                    <label class="form-label">Class</label>
+                    <select id="att-class" class="form-input" style="width:auto;" onchange="loadStudentAttendance()">
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10" selected>Class 10</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Section</label>
+                    <select id="att-section" class="form-input" style="width:auto;" onchange="loadStudentAttendance()">
+                        <option value="A" selected>Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Date</label>
+                    <input type="date" id="att-date" class="form-input" style="width:auto;" onchange="loadStudentAttendance()">
+                </div>
+                <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap;">
+                    <button onclick="saveStudentAttendance()" class="btn btn-primary">
+                        <i data-lucide="save" style="width:14px;height:14px;"></i> Save
+                    </button>
+                    <button onclick="exportStudentAttendance()" class="btn" style="background:#f0fdf4;color:#15803d;">
+                        <i data-lucide="download" style="width:14px;height:14px;"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div id="att-error" class="hidden"></div>
+
+            <!-- Quick mark all buttons -->
+            <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+                <span style="font-size:12px;font-weight:600;color:#6b7280;align-self:center;">Mark All:</span>
+                <button onclick="markAll('PRESENT')" class="btn btn-sm" style="background:#f0fdf4;color:#15803d;">All Present</button>
+                <button onclick="markAll('ABSENT')"  class="btn btn-sm" style="background:#fef2f2;color:#dc2626;">All Absent</button>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th><th>Student Name</th><th>Username</th>
+                            <th style="text-align:center;">Present</th>
+                            <th style="text-align:center;">Absent</th>
+                            <th style="text-align:center;">Leave</th>
+                        </tr>
+                    </thead>
+                    <tbody id="student-att-body">
+                        <tr class="loading-row"><td colspan="6">Select class, section, and date to load students...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 2: MARKS ENTRY ────────────────────────────────── -->
+    <div id="panel-marks" class="panel">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+            <!-- Selector Card -->
+            <div class="card lg:col-span-2" style="padding:24px;height:fit-content;">
+                <h2 class="font-bold text-gray-800 text-lg mb-4">Select Student</h2>
+
+                <div style="display:grid;gap:12px;margin-bottom:14px;">
+                    <div>
+                        <label class="form-label">Class</label>
+                        <select id="marks-class" class="form-input" onchange="fetchStudentsForMarksDropdown()">
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10" selected>Class 10</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Section</label>
+                        <select id="marks-section" class="form-input" onchange="fetchStudentsForMarksDropdown()">
+                            <option value="A" selected>Section A</option>
+                            <option value="B">Section B</option>
+                            <option value="C">Section C</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Student</label>
+                        <select id="marks-student-select" class="form-input" onchange="fetchExistingMarks()">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Exam Type</label>
+                        <select id="marks-exam-type" class="form-input" onchange="fetchExistingMarks()">
+                            <option value="MID_TERM">Mid-Term</option>
+                            <option value="FINAL">Final</option>
+                            <option value="UNIT_TEST">Unit Test</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400">Select a student + exam type to load existing marks</p>
+            </div>
+
+            <!-- Marks Entry Card -->
+            <div class="card lg:col-span-3" style="padding:24px;">
+                <h2 class="font-bold text-gray-800 text-lg mb-5">Enter Marks <span style="font-weight:400;font-size:13px;color:#94a3b8;">(out of 100)</span></h2>
+
+                <div id="marks-error" class="hidden"></div>
+
+                <div style="display:grid;gap:12px;margin-bottom:20px;">
+                    <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;align-items:center;">
+                        <label class="form-label" style="margin:0;">Mathematics</label>
+                        <input type="number" id="mark-math" min="0" max="100" placeholder="0" class="form-input" style="text-align:center;">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;align-items:center;">
+                        <label class="form-label" style="margin:0;">Science</label>
+                        <input type="number" id="mark-science" min="0" max="100" placeholder="0" class="form-input" style="text-align:center;">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;align-items:center;">
+                        <label class="form-label" style="margin:0;">English</label>
+                        <input type="number" id="mark-english" min="0" max="100" placeholder="0" class="form-input" style="text-align:center;">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;align-items:center;">
+                        <label class="form-label" style="margin:0;">Social Studies</label>
+                        <input type="number" id="mark-social" min="0" max="100" placeholder="0" class="form-input" style="text-align:center;">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 80px;gap:10px;align-items:center;">
+                        <label class="form-label" style="margin:0;">Hindi</label>
+                        <input type="number" id="mark-hindi" min="0" max="100" placeholder="0" class="form-input" style="text-align:center;">
+                    </div>
+                </div>
+
+                <p id="marks-status-msg" class="hidden text-sm mb-3"></p>
+
+                <button onclick="submitStudentMarks()" class="btn btn-primary" style="width:100%;justify-content:center;">
+                    <i data-lucide="check-circle" style="width:14px;height:14px;"></i>
+                    Submit Marks
+                </button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const API_BASE = 'http://localhost:8080';
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let cachedStudentAtt = [];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.onload = function() {
+    lucide.createIcons();
+    document.getElementById('sidebar-name').textContent = localStorage.getItem('fullName') || 'Teacher';
+
+    // Set today's date for attendance
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('att-date').value = today;
+
+    loadStudentAttendance();
+};
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+const panelTitles = {
+    attendance: { title: 'Mark Attendance',   sub: 'Mark daily attendance for your class' },
+    marks:      { title: 'Enter Marks',        sub: 'Enter and update student exam marks' }
+};
+
+function switchPanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    const meta = panelTitles[id];
+    document.getElementById('page-title').textContent    = meta.title;
+    document.getElementById('page-subtitle').textContent = meta.sub;
+    lucide.createIcons();
+    if (id === 'marks') fetchStudentsForMarksDropdown();
+}
+
+function handleLogout() {
+    localStorage.clear();
+    window.location.href = 'Login.html';
+}
+
+function showError(containerId, msg) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = `<div class="error-banner"><i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>${msg}</div>`;
+    el.classList.remove('hidden');
+    lucide.createIcons();
+}
+function clearError(id) {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = ''; el.classList.add('hidden'); }
+}
+
+// ─── PANEL 1: ATTENDANCE ──────────────────────────────────────────────────────
+async function loadStudentAttendance() {
+    const cls     = document.getElementById('att-class').value;
+    const section = document.getElementById('att-section').value;
+    const date    = document.getElementById('att-date').value;
+    if (!date) return;
+
+    clearError('att-error');
+    document.getElementById('student-att-body').innerHTML = '<tr class="loading-row"><td colspan="6">Loading students...</td></tr>';
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/status?date=${date}&className=${cls}&section=${section}`);
+        if (!res.ok) throw new Error();
+        const students = await res.json();
+        cachedStudentAtt = students;
+
+        if (!students.length) {
+            document.getElementById('student-att-body').innerHTML = '<tr class="loading-row"><td colspan="6">No students found for this class and section.</td></tr>';
+            return;
+        }
+
+        document.getElementById('student-att-body').innerHTML = students.map((s, i) => {
+            // Only pre-select if attendance was already marked - NOT_MARKED shows no selection
+            const p = s.status === 'PRESENT';
+            const a = s.status === 'ABSENT';
+            const l = s.status === 'LEAVE';
+            return `<tr>
+                <td style="color:#94a3b8;font-size:12px;">${i+1}</td>
+                <td class="font-semibold">${s.fullName}</td>
+                <td style="color:#6b7280;font-size:12.5px;">${s.username}</td>
+                <td style="text-align:center;"><input type="radio" name="satt-${s.userId}" value="PRESENT" ${p?'checked':''}></td>
+                <td style="text-align:center;"><input type="radio" name="satt-${s.userId}" value="ABSENT"  ${a?'checked':''}></td>
+                <td style="text-align:center;"><input type="radio" name="satt-${s.userId}" value="LEAVE"   ${l?'checked':''}></td>
+            </tr>`;
+        }).join('');
+    } catch {
+        showError('att-error', 'Could not load students. Make sure the backend is running.');
+    }
+}
+
+function markAll(status) {
+    cachedStudentAtt.forEach(s => {
+        const radio = document.querySelector(`input[name="satt-${s.userId}"][value="${status}"]`);
+        if (radio) radio.checked = true;
+    });
+}
+
+async function saveStudentAttendance() {
+    const date    = document.getElementById('att-date').value;
+    const records = [];
+
+    cachedStudentAtt.forEach(s => {
+        const checked = document.querySelector(`input[name="satt-${s.userId}"]:checked`);
+        if (checked) {
+            records.push({ userId: s.userId, status: checked.value });
+        }
+    });
+
+    if (!records.length) { alert('No attendance selected to save.'); return; }
+
+    const unmarked = cachedStudentAtt.length - records.length;
+    if (unmarked > 0) {
+        const ok = confirm(`${unmarked} student(s) have no attendance selected and will be skipped. Continue?`);
+        if (!ok) return;
+    }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/submit?date=${date}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(records)
+        });
+        if (!res.ok) throw new Error();
+        alert(`Attendance saved for ${records.length} students!`);
+    } catch {
+        alert('Failed to save attendance. Try again.');
+    }
+}
+
+function exportStudentAttendance() {
+    const date    = document.getElementById('att-date').value;
+    const cls     = document.getElementById('att-class').value;
+    const section = document.getElementById('att-section').value;
+    if (!cachedStudentAtt.length) { alert('Load attendance first.'); return; }
+    const header = 'Name,Username,Status,Date,Class,Section\n';
+    const rows = cachedStudentAtt.map(s => {
+        const checked = document.querySelector(`input[name="satt-${s.userId}"]:checked`);
+        const status  = checked ? checked.value : s.status;
+        return `"${s.fullName}","${s.username}","${status}","${date}","${cls}","${section}"`;
+    }).join('\n');
+    const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = `Attendance_Class${cls}${section}_${date}.csv`;
+    a.click();
+}
+
+// ─── PANEL 2: MARKS ───────────────────────────────────────────────────────────
+async function fetchStudentsForMarksDropdown() {
+    const cls     = document.getElementById('marks-class').value;
+    const section = document.getElementById('marks-section').value;
+    const select  = document.getElementById('marks-student-select');
+    select.innerHTML = '<option value="">-- Loading... --</option>';
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/students?className=${cls}&section=${section}`);
+        if (!res.ok) throw new Error();
+        const students = await res.json();
+        select.innerHTML = '<option value="">-- Select Student --</option>' +
+            students.map(s => `<option value="${s.id}">${s.fullName} (${s.username})</option>`).join('');
+    } catch {
+        select.innerHTML = '<option value="">-- Failed to load --</option>';
+    }
+}
+
+async function fetchExistingMarks() {
+    const studentId = document.getElementById('marks-student-select').value;
+    const examType  = document.getElementById('marks-exam-type').value;
+    if (!studentId) return;
+
+    // Clear all fields first
+    ['mark-math','mark-science','mark-english','mark-social','mark-hindi'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/marks/student/${studentId}/report-card?examType=${examType}`);
+        if (!res.ok) return; // No existing marks is fine - just leave fields empty
+
+        const data = await res.json();
+        if (data.subjects) {
+            data.subjects.forEach(sub => {
+                const subMap = {
+                    'Mathematics':   'mark-math',
+                    'Science':       'mark-science',
+                    'English':       'mark-english',
+                    'Social Studies':'mark-social',
+                    'Hindi':         'mark-hindi'
+                };
+                const inputId = subMap[sub.subject];
+                if (inputId) document.getElementById(inputId).value = sub.marksObtained;
+            });
+        }
+    } catch {
+        // Silently fail — no existing marks is normal
+    }
+}
+
+async function submitStudentMarks() {
+    const studentId = document.getElementById('marks-student-select').value;
+    const examType  = document.getElementById('marks-exam-type').value;
+    const statusMsg = document.getElementById('marks-status-msg');
+
+    statusMsg.classList.add('hidden');
+
+    if (!studentId) {
+        statusMsg.textContent = 'Please select a student first.';
+        statusMsg.className   = 'text-sm mb-3 text-red-600';
+        statusMsg.classList.remove('hidden');
+        return;
+    }
+
+    const subjects = [
+        { subject: 'Mathematics',   field: 'mark-math' },
+        { subject: 'Science',        field: 'mark-science' },
+        { subject: 'English',        field: 'mark-english' },
+        { subject: 'Social Studies', field: 'mark-social' },
+        { subject: 'Hindi',          field: 'mark-hindi' }
+    ];
+
+    const marks = subjects
+        .filter(s => document.getElementById(s.field).value !== '')
+        .map(s => ({
+            studentId:      parseInt(studentId),
+            subject:        s.subject,
+            examType:       examType,
+            marksObtained:  parseFloat(document.getElementById(s.field).value),
+            maxMarks:       100
+        }));
+
+    if (!marks.length) {
+        statusMsg.textContent = 'Enter at least one subject mark.';
+        statusMsg.className   = 'text-sm mb-3 text-red-600';
+        statusMsg.classList.remove('hidden');
+        return;
+    }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/marks/submit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(marks)
+        });
+        if (!res.ok) throw new Error();
+        statusMsg.textContent = `Marks saved for ${marks.length} subject(s) successfully!`;
+        statusMsg.className   = 'text-sm mb-3 text-green-600';
+        statusMsg.classList.remove('hidden');
+    } catch {
+        statusMsg.textContent = 'Failed to submit marks. Try again.';
+        statusMsg.className   = 'text-sm mb-3 text-red-600';
+        statusMsg.classList.remove('hidden');
+    }
+}
+</script>
+</body>
+</html>

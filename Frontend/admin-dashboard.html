@@ -1,0 +1,1502 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Kriti The Concept School</title>
+    <meta name="description" content="Admin management portal for Kriti The Concept School">
+    <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Firebase Auth (Compat SDK) -->
+    <script src="auth.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Role guard — redirect immediately if not admin
+        if (localStorage.getItem('role') !== 'ADMIN') {
+            window.location.href = 'Login.html';
+        }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#1E3A5F', accent: '#F5A623' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+
+        /* ── SIDEBAR ──────────────────────────────────────────── */
+        #sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background: #1E3A5F;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+        }
+        #main-content {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 28px;
+        }
+
+        /* ── NAV LINKS ────────────────────────────────────────── */
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 20px;
+            color: #94a3b8;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 8px;
+            margin: 2px 10px;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            border: none;
+            background: none;
+            width: calc(100% - 20px);
+            text-align: left;
+        }
+        .nav-link:hover { background: rgba(255,255,255,0.08); color: #e2e8f0; }
+        .nav-link.active { background: rgba(245,166,35,0.18); color: #F5A623; font-weight: 600; }
+        .nav-link svg { flex-shrink: 0; }
+
+        /* ── PANELS ───────────────────────────────────────────── */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* ── CARDS ────────────────────────────────────────────── */
+        .card {
+            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        /* ── TABLES ───────────────────────────────────────────── */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table thead tr { background: #f8fafc; }
+        .data-table thead th {
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .data-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background 0.1s; }
+        .data-table tbody tr:hover { background: #f8fafc; }
+        .data-table tbody td { padding: 13px 16px; font-size: 13.5px; color: #374151; }
+        .data-table tbody td:last-child { text-align: center; }
+
+        /* ── STAT WIDGETS ─────────────────────────────────────── */
+        .stat-card { border-radius: 12px; padding: 20px 22px; }
+
+        /* ── BUTTONS ──────────────────────────────────────────── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px; font-size: 13px;
+            font-weight: 600; cursor: pointer; transition: all 0.15s;
+            border: none;
+        }
+        .btn-primary { background: #1E3A5F; color: white; }
+        .btn-primary:hover { background: #F5A623; }
+        .btn-danger  { background: #fee2e2; color: #dc2626; }
+        .btn-danger:hover  { background: #fecaca; }
+        .btn-sm { padding: 5px 11px; font-size: 12px; border-radius: 6px; }
+
+        /* ── STATUS BADGES ────────────────────────────────────── */
+        .badge {
+            display: inline-block; padding: 3px 10px;
+            border-radius: 999px; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .badge-new       { background: #fff7ed; color: #c2410c; }
+        .badge-contacted { background: #eff6ff; color: #1d4ed8; }
+        .badge-visited   { background: #faf5ff; color: #7c3aed; }
+        .badge-converted { background: #f0fdf4; color: #15803d; }
+
+        /* ── FORM INPUTS ──────────────────────────────────────── */
+        .form-input {
+            width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;
+            padding: 9px 13px; font-size: 13.5px; outline: none;
+            transition: border-color 0.2s; font-family: 'Inter', sans-serif;
+            color: #1a202c;
+        }
+        .form-input:focus { border-color: #1E3A5F; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 5px; }
+
+        /* ── MODALS ───────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .modal-box { background: white; border-radius: 16px; padding: 28px; width: 100%; max-width: 440px; }
+
+        /* ── CALENDAR ─────────────────────────────────────────── */
+        .cal-cell {
+            aspect-ratio: 1; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 600;
+        }
+
+        /* ── LOADING / ERROR ──────────────────────────────────── */
+        .loading-row td { text-align: center; color: #94a3b8; padding: 40px; font-size: 13px; }
+        .error-banner { background: #fee2e2; color: #dc2626; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  SIDEBAR                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<aside id="sidebar">
+    <!-- Logo -->
+    <div style="padding: 22px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS" style="height:36px; width:auto;">
+            <div>
+                <div style="color:white; font-size:13px; font-weight:700; line-height:1.2;">KTCS</div>
+                <div style="color:#94a3b8; font-size:10.5px;">Admin Panel</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav style="flex:1; padding: 14px 0; overflow-y:auto;">
+        <div style="padding: 0 10px 6px; font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.08em; margin-top:6px;">Management</div>
+
+        <button class="nav-link active" onclick="switchPanel('leads')" id="nav-leads">
+            <i data-lucide="clipboard-list" style="width:17px;height:17px;"></i>
+            Walk-In Leads
+        </button>
+        <button class="nav-link" onclick="switchPanel('attendance')" id="nav-attendance">
+            <i data-lucide="calendar-check" style="width:17px;height:17px;"></i>
+            Teacher Attendance
+        </button>
+        <button class="nav-link" onclick="switchPanel('salary')" id="nav-salary">
+            <i data-lucide="indian-rupee" style="width:17px;height:17px;"></i>
+            Salary Calculator
+        </button>
+
+        <div style="padding: 10px 10px 6px; font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.08em; margin-top:8px;">People</div>
+
+        <button class="nav-link" onclick="switchPanel('roster')" id="nav-roster">
+            <i data-lucide="users" style="width:17px;height:17px;"></i>
+            School Roster
+        </button>
+        <button class="nav-link" onclick="switchPanel('register')" id="nav-register">
+            <i data-lucide="user-plus" style="width:17px;height:17px;"></i>
+            Add Student / Staff
+        </button>
+    </nav>
+
+    <!-- User Info + Logout -->
+    <div style="padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <div style="width:34px; height:34px; background:rgba(245,166,35,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <i data-lucide="shield-check" style="width:16px;height:16px;color:#F5A623;"></i>
+            </div>
+            <div>
+                <div id="sidebar-name" style="color:white; font-size:12.5px; font-weight:600;">Admin</div>
+                <div style="color:#64748b; font-size:10.5px;">Administrator</div>
+            </div>
+        </div>
+        <button onclick="handleLogout()" class="btn btn-sm" style="width:100%; background:rgba(239,68,68,0.15); color:#f87171; justify-content:center;">
+            <i data-lucide="log-out" style="width:13px;height:13px;"></i>
+            Logout
+        </button>
+    </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  MAIN CONTENT                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<main id="main-content">
+
+    <!-- ── PAGE HEADER ──────────────────────────────────────────── -->
+    <div style="margin-bottom:24px;">
+        <h1 id="page-title" class="text-2xl font-extrabold text-gray-800">Walk-In Leads</h1>
+        <p id="page-subtitle" class="text-sm text-gray-500 mt-1">View and manage walk-in inquiries from Contact Us form</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  PANEL 1: WALK-IN LEADS                                    -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div id="panel-leads" class="panel active">
+
+        <!-- Stat widgets -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+            <div class="stat-card card" style="background: linear-gradient(135deg,#1E3A5F,#2c5282);">
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:#90cdf4;letter-spacing:.06em;">Total Walk-Ins</p>
+                <p id="widget-total-leads" style="font-size:34px;font-weight:800;color:white;margin-top:6px;">0</p>
+            </div>
+            <div class="stat-card card" style="background: linear-gradient(135deg,#d97706,#F5A623);">
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fef9c3;letter-spacing:.06em;">New Inquiries</p>
+                <p id="widget-new-leads" style="font-size:34px;font-weight:800;color:white;margin-top:6px;">0</p>
+            </div>
+            <div class="stat-card card" style="background: linear-gradient(135deg,#059669,#10b981);">
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:#a7f3d0;letter-spacing:.06em;">Converted</p>
+                <p id="widget-converted-leads" style="font-size:34px;font-weight:800;color:white;margin-top:6px;">0</p>
+            </div>
+        </div>
+
+        <!-- Leads Table Card -->
+        <div class="card">
+            <div style="padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+                <h2 class="font-bold text-gray-800">Inquiry List</h2>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="exportLeadsToExcel()" class="btn btn-sm" style="background:#f0fdf4;color:#15803d;">
+                        <i data-lucide="download" style="width:13px;height:13px;"></i> Export CSV
+                    </button>
+                    <button onclick="fetchLeads()" class="btn btn-sm btn-primary">
+                        <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div id="leads-error" class="hidden" style="margin:12px 20px 0;"></div>
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th><th>Name</th><th>Phone</th><th>Email</th>
+                            <th>Message</th><th>Status</th><th style="text-align:center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-table-body">
+                        <tr class="loading-row"><td colspan="7">Loading inquiries...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  PANEL 2: TEACHER ATTENDANCE                               -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div id="panel-attendance" class="panel">
+        <div class="card" style="padding:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h2 class="font-bold text-gray-800 text-lg">Mark Teacher Attendance</h2>
+                    <p class="text-sm text-gray-500 mt-1">Select a date and mark each teacher's status</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <input type="date" id="teacher-att-date" class="form-input" style="width:auto;"
+                        onchange="loadTeacherAttendance()">
+                    <button onclick="saveTeacherAttendance()" class="btn btn-primary">
+                        <i data-lucide="save" style="width:14px;height:14px;"></i> Save Attendance
+                    </button>
+                    <button onclick="exportTeacherAttendance()" class="btn" style="background:#f0fdf4;color:#15803d;">
+                        <i data-lucide="download" style="width:14px;height:14px;"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div id="teacher-att-error" class="hidden"></div>
+
+            <div style="overflow-x:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th><th>Teacher Name</th><th>Username</th>
+                            <th style="text-align:center;">Present</th>
+                            <th style="text-align:center;">Absent</th>
+                            <th style="text-align:center;">Leave</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-att-body">
+                        <tr class="loading-row"><td colspan="6">Select a date to load teachers...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  PANEL 3: SALARY CALCULATOR                                -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div id="panel-salary" class="panel">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Input Card -->
+            <div class="card" style="padding:24px; height:fit-content;">
+                <h2 class="font-bold text-gray-800 text-lg mb-5">Compute Salary</h2>
+                <div style="margin-bottom:14px;">
+                    <label class="form-label">Teacher</label>
+                    <select id="salary-teacher-select" class="form-input">
+                        <option value="">-- Select Teacher --</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label class="form-label">Month</label>
+                    <select id="salary-month-select" class="form-input">
+                        <option value="1">January</option><option value="2">February</option>
+                        <option value="3">March</option><option value="4">April</option>
+                        <option value="5">May</option><option value="6" selected>June</option>
+                        <option value="7">July</option><option value="8">August</option>
+                        <option value="9">September</option><option value="10">October</option>
+                        <option value="11">November</option><option value="12">December</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label class="form-label">Year</label>
+                    <input type="number" id="salary-year-input" value="2026" class="form-input">
+                </div>
+                <button onclick="calculateSalary()" class="btn btn-primary" style="width:100%; justify-content:center;">
+                    <i data-lucide="calculator" style="width:15px;height:15px;"></i>
+                    Compute Payout
+                </button>
+            </div>
+
+            <!-- Payslip Card -->
+            <div class="card lg:col-span-2" style="padding:24px;">
+                <h2 class="font-bold text-gray-800 text-lg mb-5">Payslip</h2>
+
+                <div id="salary-placeholder" class="text-center" style="padding:60px 20px; color:#94a3b8;">
+                    <i data-lucide="file-text" style="width:40px;height:40px;margin:0 auto 12px; display:block;"></i>
+                    Select a teacher and click Compute Payout
+                </div>
+
+                <div id="salary-result" class="hidden">
+                    <div style="border-bottom:1px dashed #e2e8f0; padding-bottom:16px; margin-bottom:20px;">
+                        <h3 id="sheet-teacher-name" class="text-xl font-extrabold text-primary">-</h3>
+                        <p class="text-sm text-gray-500 mt-1">Period: <span id="sheet-period" class="font-semibold text-gray-700">-</span></p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                        <div style="background:#eff6ff; border-radius:10px; padding:16px; text-align:center;">
+                            <p style="font-size:10px;font-weight:700;color:#3b82f6;text-transform:uppercase;">Daily Rate</p>
+                            <p id="sheet-rate" style="font-size:22px;font-weight:800;color:#1d4ed8;margin-top:4px;">₹0</p>
+                        </div>
+                        <div style="background:#f0fdf4; border-radius:10px; padding:16px; text-align:center;">
+                            <p style="font-size:10px;font-weight:700;color:#22c55e;text-transform:uppercase;">Present</p>
+                            <p id="sheet-present" style="font-size:22px;font-weight:800;color:#15803d;margin-top:4px;">0</p>
+                        </div>
+                        <div style="background:#fef2f2; border-radius:10px; padding:16px; text-align:center;">
+                            <p style="font-size:10px;font-weight:700;color:#ef4444;text-transform:uppercase;">Absent</p>
+                            <p id="sheet-absent" style="font-size:22px;font-weight:800;color:#b91c1c;margin-top:4px;">0</p>
+                        </div>
+                        <div style="background:#fffbeb; border-radius:10px; padding:16px; text-align:center;">
+                            <p style="font-size:10px;font-weight:700;color:#f59e0b;text-transform:uppercase;">Leave</p>
+                            <p id="sheet-leave" style="font-size:22px;font-weight:800;color:#b45309;margin-top:4px;">0</p>
+                        </div>
+                    </div>
+
+                    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:18px 22px; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <div>
+                            <p class="font-semibold text-gray-700">Net Payout</p>
+                            <p class="text-xs text-gray-400 mt-0.5">Present Days × Daily Rate</p>
+                        </div>
+                        <p id="sheet-net-salary" style="font-size:28px;font-weight:800;color:#15803d;">₹0.00</p>
+                    </div>
+
+                    <!-- Teacher Attendance Calendar -->
+                    <div style="border-top:1px solid #e2e8f0; padding-top:18px;">
+                        <h4 class="font-bold text-gray-700 mb-3">Attendance Calendar</h4>
+                        <div class="grid grid-cols-7 gap-1.5 text-center" style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:6px;">
+                            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+                            <div>Thu</div><div>Fri</div><div>Sat</div>
+                        </div>
+                        <div id="teacher-calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
+                        <div style="display:flex;gap:14px;margin-top:10px;justify-content:center;font-size:11px;font-weight:700;">
+                            <span style="color:#15803d;">&#9679; Present</span>
+                            <span style="color:#dc2626;">&#9679; Absent</span>
+                            <span style="color:#7c3aed;">&#9679; Leave</span>
+                            <span style="color:#94a3b8;">&#9679; Not Marked</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  PANEL 4: SCHOOL ROSTER                                    -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div id="panel-roster" class="panel">
+
+        <!-- Students Table -->
+        <div class="card" style="margin-bottom:20px;">
+            <div style="padding:18px 20px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div>
+                    <h2 class="font-bold text-gray-800">Active Students</h2>
+                    <p class="text-xs text-gray-500 mt-0.5">Manage student class, section, and profiles</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <select id="roster-filter-class" onchange="filterRosterStudents()" class="form-input" style="width:auto;font-size:12px;padding:6px 10px;">
+                        <option value="ALL">All Classes</option>
+                        <option value="8">Class 8</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                    </select>
+                    <select id="roster-filter-section" onchange="filterRosterStudents()" class="form-input" style="width:auto;font-size:12px;padding:6px 10px;">
+                        <option value="ALL">All Sections</option>
+                        <option value="A">Section A</option>
+                        <option value="B">Section B</option>
+                        <option value="C">Section C</option>
+                    </select>
+                </div>
+            </div>
+            <div style="overflow-x:auto; max-height:380px; overflow-y:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Username</th><th>Phone</th><th style="text-align:center;">Class / Sec</th><th style="text-align:center;">Joining Date</th><th style="text-align:center;">Actions</th></tr>
+                    </thead>
+                    <tbody id="roster-students-body">
+                        <tr class="loading-row"><td colspan="6">Loading students...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Teachers Table -->
+        <div class="card" style="margin-bottom:20px;">
+            <div style="padding:18px 20px; border-bottom:1px solid #f1f5f9;">
+                <h2 class="font-bold text-gray-800">Active Teachers</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Manage teacher profiles and daily pay rates</p>
+            </div>
+            <div style="overflow-x:auto; max-height:380px; overflow-y:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Username</th><th>Phone</th><th style="text-align:center;">Daily Rate</th><th style="text-align:center;">Joining Date</th><th style="text-align:center;">Actions</th></tr>
+                    </thead>
+                    <tbody id="roster-teachers-body">
+                        <tr class="loading-row"><td colspan="6">Loading teachers...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Left / Deactivated Archive -->
+        <div class="card">
+            <div style="padding:18px 20px; border-bottom:1px solid #f1f5f9;">
+                <h2 class="font-bold text-gray-800">Deactivated Accounts</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Students and teachers who have left the institution</p>
+            </div>
+            <div style="overflow-x:auto; max-height:380px; overflow-y:auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Name</th><th>Username</th><th>Role</th><th>Phone</th><th style="text-align:center;">Joining</th><th style="text-align:center;">Left On</th></tr>
+                    </thead>
+                    <tbody id="roster-left-body">
+                        <tr class="loading-row"><td colspan="6">Loading archive...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <!--  PANEL 5: ADD STUDENT / STAFF                              -->
+    <!-- ══════════════════════════════════════════════════════════ -->
+    <div id="panel-register" class="panel">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Registration Form -->
+            <div class="card" style="padding:24px;">
+                <h2 class="font-bold text-gray-800 text-lg mb-5">Register New Account</h2>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="reg-fullName" placeholder="Full name" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="reg-phone" placeholder="10-digit phone" class="form-input">
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label class="form-label">Username</label>
+                        <input type="text" id="reg-username" placeholder="Login username" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Password</label>
+                        <input type="password" id="reg-password" placeholder="Set password" class="form-input">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:14px;">
+                    <label class="form-label">Role</label>
+                    <select id="reg-role" class="form-input" onchange="toggleRoleFields(this.value)">
+                        <option value="STUDENT">Student</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
+
+                <!-- Student fields -->
+                <div id="student-only-inputs" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+                    <div>
+                        <label class="form-label">Class</label>
+                        <input type="text" id="reg-class" placeholder="e.g. 10" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Section</label>
+                        <input type="text" id="reg-section" placeholder="e.g. A" class="form-input">
+                    </div>
+                </div>
+
+                <!-- Teacher fields -->
+                <div id="teacher-only-inputs" style="display:none; margin-bottom:14px;">
+                    <label class="form-label">Base Salary Per Day (₹)</label>
+                    <input type="number" id="reg-salary" placeholder="e.g. 1500" class="form-input">
+                </div>
+
+                <p id="reg-status-message" class="hidden text-sm mb-3"></p>
+
+                <button onclick="submitRegisterUser()" class="btn btn-primary" style="width:100%; justify-content:center;">
+                    <i data-lucide="user-plus" style="width:14px;height:14px;"></i>
+                    Register Account
+                </button>
+            </div>
+
+            <!-- Export Section -->
+            <div class="card" style="padding:24px; height:fit-content;">
+                <h2 class="font-bold text-gray-800 text-lg mb-2">Export System Data</h2>
+                <p class="text-sm text-gray-500 mb-5">Download student or teacher directories as CSV files</p>
+
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <button onclick="exportAllTeachers()" class="btn" style="justify-content:center; background:#eff6ff; color:#1d4ed8; padding:14px;">
+                        <i data-lucide="users" style="width:15px;height:15px;"></i>
+                        Export All Teachers (CSV)
+                    </button>
+                    <button onclick="exportAllStudents()" class="btn" style="justify-content:center; background:#f0fdf4; color:#15803d; padding:14px;">
+                        <i data-lucide="graduation-cap" style="width:15px;height:15px;"></i>
+                        Export All Students (CSV)
+                    </button>
+                    <button onclick="exportLeadsToExcel()" class="btn" style="justify-content:center; background:#fffbeb; color:#b45309; padding:14px;">
+                        <i data-lucide="clipboard-list" style="width:15px;height:15px;"></i>
+                        Export All Leads (CSV)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  MODALS                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- Edit User Modal -->
+<div id="edit-user-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h3 id="modal-title" class="font-bold text-gray-800 text-lg mb-4">Edit User Details</h3>
+        <input type="hidden" id="edit-user-id">
+        <input type="hidden" id="edit-user-role">
+
+        <div style="display:grid; gap:12px; margin-bottom:18px;">
+            <div>
+                <label class="form-label">Full Name</label>
+                <input type="text" id="edit-fullName" class="form-input">
+            </div>
+            <div>
+                <label class="form-label">Phone</label>
+                <input type="text" id="edit-phone" class="form-input">
+            </div>
+            <div>
+                <label class="form-label">Joining Date</label>
+                <input type="date" id="edit-joiningDate" class="form-input">
+            </div>
+            <div id="edit-student-fields" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label">Class</label>
+                    <input type="text" id="edit-class" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Section</label>
+                    <input type="text" id="edit-section" class="form-input">
+                </div>
+            </div>
+            <div id="edit-teacher-fields" style="display:none;">
+                <label class="form-label">Base Salary Per Day (₹)</label>
+                <input type="number" id="edit-salary" class="form-input">
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="closeEditModal()" class="btn btn-sm" style="background:#f1f5f9;color:#64748b;">Cancel</button>
+            <button onclick="submitUserUpdate()" class="btn btn-sm btn-primary">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Leave / Archive Modal -->
+<div id="leave-user-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h3 class="font-bold text-red-600 text-lg mb-2">Mark as Left</h3>
+        <p class="text-sm text-gray-500 mb-4">This will archive the account and disable login access permanently.</p>
+        <input type="hidden" id="leave-user-id">
+        <div style="margin-bottom:18px;">
+            <label class="form-label">Leaving Date</label>
+            <input type="date" id="leave-date-input" class="form-input">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="closeLeaveModal()" class="btn btn-sm" style="background:#f1f5f9;color:#64748b;">Cancel</button>
+            <button onclick="submitUserLeaveArchive()" class="btn btn-sm btn-danger" style="background:#dc2626;color:white;">Archive & Deactivate</button>
+        </div>
+    </div>
+</div>
+
+<!-- Reset Password Modal (Admin Only) -->
+<div id="reset-pw-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h3 style="font-weight:700;color:#1E3A5F;font-size:17px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="key" style="width:18px;height:18px;"></i>
+            Reset Password
+        </h3>
+        <p style="font-size:12px;color:#6b7280;margin-bottom:16px;">
+            Setting a new password for: <strong id="reset-pw-user-name">-</strong>
+        </p>
+        <input type="hidden" id="reset-pw-user-id">
+
+        <div style="margin-bottom:14px;">
+            <label class="form-label">New Password</label>
+            <input type="password" id="reset-pw-new" class="form-input" placeholder="At least 4 characters">
+        </div>
+        <div style="margin-bottom:18px;">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" id="reset-pw-confirm" class="form-input" placeholder="Type the password again">
+        </div>
+
+        <p id="reset-pw-status" class="text-sm mb-3 hidden"></p>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="closeResetPwModal()" class="btn btn-sm" style="background:#f1f5f9;color:#64748b;">Cancel</button>
+            <button onclick="submitPasswordReset()" class="btn btn-sm btn-primary">
+                <i data-lucide="check" style="width:13px;height:13px;"></i>
+                Set New Password
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- WhatsApp Message Modal -->
+<div id="whatsapp-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h3 style="font-weight:700;color:#15803d;font-size:17px;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+            <i data-lucide="message-circle" style="width:18px;height:18px;"></i>
+            Send WhatsApp Message
+        </h3>
+        <p style="font-size:12px;color:#6b7280;margin-bottom:16px;">
+            To: <strong id="wa-lead-name">-</strong> &nbsp;|&nbsp; <span id="wa-lead-phone" style="font-family:monospace;">-</span>
+        </p>
+        <input type="hidden" id="wa-raw-phone">
+
+        <div style="margin-bottom:12px;">
+            <label class="form-label">Message Template</label>
+            <select id="wa-template-select" onchange="applyWATemplate()" class="form-input">
+                <option value="TOUR">Campus Tour Invitation</option>
+                <option value="FOLLOWUP">Admissions Follow-up</option>
+                <option value="CUSTOM">Custom Message</option>
+            </select>
+        </div>
+        <div style="margin-bottom:18px;">
+            <label class="form-label">Message Body</label>
+            <textarea id="wa-message-body" rows="4" class="form-input" style="resize:none;"></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button onclick="closeWAModal()" class="btn btn-sm" style="background:#f1f5f9;color:#64748b;">Cancel</button>
+            <button onclick="triggerWASend()" class="btn btn-sm" style="background:#15803d;color:white;">
+                <i data-lucide="send" style="width:13px;height:13px;"></i>
+                Send via WhatsApp
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+// Change this one line when hosting the backend on a server
+const API_BASE = 'http://localhost:8080';
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let globalActiveStudents = [];
+let cachedLeads          = [];
+let cachedTeacherAtt     = [];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.onload = function() {
+    lucide.createIcons();
+
+    // Set admin name from localStorage
+    const name = localStorage.getItem('fullName') || 'Admin';
+    document.getElementById('sidebar-name').textContent = name;
+
+    // Set today's date for attendance
+    document.getElementById('teacher-att-date').value = new Date().toISOString().split('T')[0];
+
+    // Load default panel data
+    fetchLeads();
+};
+
+// ─── SIDEBAR NAVIGATION ───────────────────────────────────────────────────────
+const panelTitles = {
+    leads:      { title: 'Walk-In Leads',         sub: 'View and manage walk-in inquiries from the Contact Us form' },
+    attendance: { title: 'Teacher Attendance',     sub: 'Mark and track daily teacher attendance' },
+    salary:     { title: 'Salary Calculator',      sub: 'Compute monthly teacher payouts based on attendance' },
+    roster:     { title: 'School Roster',          sub: 'Manage student and teacher profiles' },
+    register:   { title: 'Add Student / Staff',    sub: 'Register new student, teacher, or admin accounts' }
+};
+
+function switchPanel(panelId) {
+    // Hide all panels
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+    // Show selected panel + highlight nav link
+    document.getElementById('panel-' + panelId).classList.add('active');
+    document.getElementById('nav-' + panelId).classList.add('active');
+
+    // Update page header
+    const meta = panelTitles[panelId];
+    document.getElementById('page-title').textContent    = meta.title;
+    document.getElementById('page-subtitle').textContent = meta.sub;
+
+    // Refresh icons
+    lucide.createIcons();
+
+    // Load data for this panel
+    if (panelId === 'attendance')  loadTeacherAttendance();
+    if (panelId === 'salary')      loadTeachersDropdown();
+    if (panelId === 'roster')      loadSchoolRoster();
+}
+
+// ─── LOGOUT ───────────────────────────────────────────────────────────────────
+function handleLogout() {
+    localStorage.clear();
+    window.location.href = 'Login.html';
+}
+
+// ─── HELPER: show error banner inside a container ─────────────────────────────
+function showError(containerId, msg) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = `<div class="error-banner"><i data-lucide="alert-circle" style="width:15px;height:15px;flex-shrink:0;"></i>${msg}</div>`;
+    el.classList.remove('hidden');
+    lucide.createIcons();
+}
+function clearError(containerId) {
+    const el = document.getElementById(containerId);
+    if (el) { el.innerHTML = ''; el.classList.add('hidden'); }
+}
+
+// ─── PANEL 1: WALK-IN LEADS ───────────────────────────────────────────────────
+async function fetchLeads() {
+    clearError('leads-error');
+    document.getElementById('leads-table-body').innerHTML = '<tr class="loading-row"><td colspan="7">Loading inquiries...</td></tr>';
+    try {
+        const res = await authFetch(`${API_BASE}/api/leads`);
+        if (!res.ok) throw new Error('Server error');
+        const leads = await res.json();
+        cachedLeads = leads;
+        renderLeads(leads);
+    } catch (err) {
+        showError('leads-error', 'Could not load inquiries. Make sure the backend is running.');
+        document.getElementById('leads-table-body').innerHTML = '<tr class="loading-row"><td colspan="7">Failed to load.</td></tr>';
+    }
+}
+
+function renderLeads(leads) {
+    const tbody = document.getElementById('leads-table-body');
+
+    const total     = leads.length;
+    const newCount  = leads.filter(l => l.status === 'NEW').length;
+    const converted = leads.filter(l => l.status === 'CONVERTED').length;
+    document.getElementById('widget-total-leads').textContent     = total;
+    document.getElementById('widget-new-leads').textContent       = newCount;
+    document.getElementById('widget-converted-leads').textContent = converted;
+
+    if (total === 0) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="7">No inquiries found.</td></tr>';
+        return;
+    }
+
+    leads.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    tbody.innerHTML = leads.map(lead => {
+        const date = lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-IN', {
+            day:'2-digit', month:'short', year:'numeric'
+        }) : '-';
+
+        const badgeClass = {
+            NEW: 'badge-new', CONTACTED: 'badge-contacted',
+            VISITED: 'badge-visited', CONVERTED: 'badge-converted'
+        }[lead.status] || 'badge-new';
+
+        const phoneSafe = (lead.phone || '').replace(/'/g, "\\'");
+        const nameSafe  = (lead.fullName || lead.name || '').replace(/'/g, "\\'");
+
+        return `<tr>
+            <td style="color:#6b7280;font-size:12.5px;">${date}</td>
+            <td class="font-semibold text-primary">${lead.name || '-'}</td>
+            <td>${lead.phone || '-'}</td>
+            <td style="color:#6b7280;">${lead.email || '-'}</td>
+            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${lead.message || ''}">${lead.message || '-'}</td>
+            <td><span class="badge ${badgeClass}">${lead.status}</span></td>
+            <td>
+                <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                    <select onchange="updateLeadStatus(${lead.id}, this.value)"
+                        class="form-input" style="font-size:11.5px;padding:4px 8px;width:auto;">
+                        <option value="NEW"       ${lead.status==='NEW'       ?'selected':''}>New</option>
+                        <option value="CONTACTED" ${lead.status==='CONTACTED' ?'selected':''}>Contacted</option>
+                        <option value="VISITED"   ${lead.status==='VISITED'   ?'selected':''}>Visited</option>
+                        <option value="CONVERTED" ${lead.status==='CONVERTED' ?'selected':''}>Converted</option>
+                    </select>
+                    <button onclick="openWAModal('${phoneSafe}', '${nameSafe}')"
+                        class="btn btn-sm" style="background:#f0fdf4;color:#15803d;white-space:nowrap;">
+                        <i data-lucide="message-circle" style="width:12px;height:12px;"></i> Msg
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+
+    lucide.createIcons();
+}
+
+async function updateLeadStatus(id, newStatus) {
+    try {
+        const res = await authFetch(`${API_BASE}/api/leads/${id}/status?status=${newStatus}`, { method: 'PUT' });
+        if (!res.ok) throw new Error();
+        await fetchLeads();
+    } catch {
+        alert('Failed to update status. Try again.');
+    }
+}
+
+function exportLeadsToExcel() {
+    if (!cachedLeads.length) { alert('No leads to export.'); return; }
+    const header = 'Name,Phone,Email,Status,Message,Date\n';
+    const rows = cachedLeads.map(l =>
+        `"${l.name || ''}","${l.phone || ''}","${l.email || ''}","${l.status || ''}","${(l.message||'').replace(/"/g,'""')}","${l.createdAt || ''}"`
+    ).join('\n');
+    downloadCSV('\uFEFF' + header + rows, 'KTCS_Leads.csv');
+}
+
+// ─── PANEL 2: TEACHER ATTENDANCE ─────────────────────────────────────────────
+async function loadTeacherAttendance() {
+    const date = document.getElementById('teacher-att-date').value;
+    if (!date) return;
+    clearError('teacher-att-error');
+    document.getElementById('teacher-att-body').innerHTML = '<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/status/teachers?date=${date}`);
+        if (!res.ok) throw new Error();
+        const teachers = await res.json();
+        cachedTeacherAtt = teachers;
+
+        if (teachers.length === 0) {
+            document.getElementById('teacher-att-body').innerHTML = '<tr class="loading-row"><td colspan="6">No teachers found.</td></tr>';
+            return;
+        }
+
+        document.getElementById('teacher-att-body').innerHTML = teachers.map((t, i) => {
+            const p = t.status === 'PRESENT';
+            const a = t.status === 'ABSENT';
+            const l = t.status === 'LEAVE';
+            return `<tr>
+                <td style="color:#94a3b8;font-size:12px;">${i+1}</td>
+                <td class="font-semibold">${t.fullName}</td>
+                <td style="color:#6b7280;font-size:12.5px;">${t.username}</td>
+                <td style="text-align:center;"><input type="radio" name="att-${t.userId}" value="PRESENT" ${p?'checked':''}></td>
+                <td style="text-align:center;"><input type="radio" name="att-${t.userId}" value="ABSENT"  ${a?'checked':''}></td>
+                <td style="text-align:center;"><input type="radio" name="att-${t.userId}" value="LEAVE"   ${l?'checked':''}></td>
+            </tr>`;
+        }).join('');
+    } catch {
+        showError('teacher-att-error', 'Could not load teacher attendance. Check backend connection.');
+    }
+}
+
+async function saveTeacherAttendance() {
+    const date    = document.getElementById('teacher-att-date').value;
+    const records = [];
+
+    cachedTeacherAtt.forEach(t => {
+        const checked = document.querySelector(`input[name="att-${t.userId}"]:checked`);
+        if (checked) records.push({ userId: t.userId, status: checked.value });
+    });
+
+    if (!records.length) { alert('No attendance selected.'); return; }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/submit?date=${date}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(records)
+        });
+        if (!res.ok) throw new Error();
+        alert('Attendance saved successfully!');
+    } catch {
+        alert('Failed to save attendance. Try again.');
+    }
+}
+
+function exportTeacherAttendance() {
+    const date = document.getElementById('teacher-att-date').value;
+    if (!cachedTeacherAtt.length) { alert('Load attendance first.'); return; }
+    const header = 'Name,Username,Status,Date\n';
+    const rows = cachedTeacherAtt.map(t => {
+        const checked = document.querySelector(`input[name="att-${t.userId}"]:checked`);
+        const status  = checked ? checked.value : t.status;
+        return `"${t.fullName}","${t.username}","${status}","${date}"`;
+    }).join('\n');
+    downloadCSV('\uFEFF' + header + rows, `Teacher_Attendance_${date}.csv`);
+}
+
+// ─── PANEL 3: SALARY CALCULATOR ──────────────────────────────────────────────
+async function loadTeachersDropdown() {
+    const select = document.getElementById('salary-teacher-select');
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/teachers`);
+        if (!res.ok) throw new Error();
+        const teachers = await res.json();
+        select.innerHTML = '<option value="">-- Select Teacher --</option>' +
+            teachers.map(t => `<option value="${t.id}">${t.fullName} (${t.username})</option>`).join('');
+    } catch {
+        select.innerHTML = '<option value="">-- Failed to load --</option>';
+    }
+}
+
+async function calculateSalary() {
+    const teacherId = document.getElementById('salary-teacher-select').value;
+    const month     = document.getElementById('salary-month-select').value;
+    const year      = document.getElementById('salary-year-input').value;
+
+    if (!teacherId) { alert('Please select a teacher.'); return; }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/salary/calculate/${teacherId}?year=${year}&month=${month}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        document.getElementById('sheet-teacher-name').textContent = data.teacherName;
+        const monthName = document.getElementById('salary-month-select').options[parseInt(month)-1].text;
+        document.getElementById('sheet-period').textContent       = `${monthName} ${year}`;
+        document.getElementById('sheet-rate').textContent         = `₹${data.dailyRate}`;
+        document.getElementById('sheet-present').textContent      = data.presentDays;
+        document.getElementById('sheet-absent').textContent       = data.absentDays;
+        document.getElementById('sheet-leave').textContent        = data.leaveDays;
+        document.getElementById('sheet-net-salary').textContent   = `₹${data.netSalary.toFixed(2)}`;
+
+        document.getElementById('salary-placeholder').classList.add('hidden');
+        document.getElementById('salary-result').classList.remove('hidden');
+
+        renderTeacherAttendanceCalendar(teacherId, parseInt(month), parseInt(year));
+    } catch {
+        alert('Could not compute salary. Check backend logs.');
+    }
+}
+
+async function renderTeacherAttendanceCalendar(teacherId, month, year) {
+    const grid = document.getElementById('teacher-calendar-grid');
+    grid.innerHTML = '<div style="grid-column:span 7;text-align:center;color:#94a3b8;font-size:12px;padding:10px;">Loading calendar...</div>';
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/history/${teacherId}`);
+        if (!res.ok) throw new Error();
+        const history = await res.json();
+
+        // Build a lookup map: "YYYY-MM-DD" → status
+        const attMap = {};
+        history.forEach(h => { attMap[h.date] = h.status; });
+
+        const firstDay = new Date(year, month - 1, 1);
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const startDow    = firstDay.getDay(); // 0=Sun
+
+        let cells = '';
+        // Blank cells before first day
+        for (let i = 0; i < startDow; i++) {
+            cells += `<div class="cal-cell" style="background:#f8fafc;"></div>`;
+        }
+        // Day cells
+        for (let d = 1; d <= daysInMonth; d++) {
+            const mm   = String(month).padStart(2,'0');
+            const dd   = String(d).padStart(2,'0');
+            const key  = `${year}-${mm}-${dd}`;
+            const stat = attMap[key];
+            let bg = '#f1f5f9'; let color = '#94a3b8';
+            if (stat === 'PRESENT') { bg = '#dcfce7'; color = '#15803d'; }
+            if (stat === 'ABSENT')  { bg = '#fee2e2'; color = '#dc2626'; }
+            if (stat === 'LEAVE')   { bg = '#f3e8ff'; color = '#7c3aed'; }
+            cells += `<div class="cal-cell" style="background:${bg};color:${color};" title="${stat||'Not marked'}">${d}</div>`;
+        }
+        grid.innerHTML = cells;
+    } catch {
+        grid.innerHTML = '<div style="grid-column:span 7;text-align:center;color:#dc2626;font-size:12px;">Could not load calendar.</div>';
+    }
+}
+
+// ─── PANEL 4: SCHOOL ROSTER ───────────────────────────────────────────────────
+async function loadSchoolRoster() {
+    // Load all three tables in parallel
+    loadActiveStudents();
+    loadActiveTeachers();
+    loadLeftUsers();
+}
+
+async function loadActiveStudents() {
+    document.getElementById('roster-students-body').innerHTML = '<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/active/students`);
+        if (!res.ok) throw new Error();
+        globalActiveStudents = await res.json();
+        filterRosterStudents();
+    } catch {
+        document.getElementById('roster-students-body').innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#dc2626;">Failed to load students.</td></tr>';
+    }
+}
+
+async function loadActiveTeachers() {
+    document.getElementById('roster-teachers-body').innerHTML = '<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/active/teachers`);
+        if (!res.ok) throw new Error();
+        const teachers = await res.json();
+        renderTeachersRoster(teachers);
+    } catch {
+        document.getElementById('roster-teachers-body').innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#dc2626;">Failed to load teachers.</td></tr>';
+    }
+}
+
+async function loadLeftUsers() {
+    document.getElementById('roster-left-body').innerHTML = '<tr class="loading-row"><td colspan="6">Loading...</td></tr>';
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/left`);
+        if (!res.ok) throw new Error();
+        const leftUsers = await res.json();
+        renderLeftRoster(leftUsers);
+    } catch {
+        document.getElementById('roster-left-body').innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#dc2626;">Failed to load archive.</td></tr>';
+    }
+}
+
+function filterRosterStudents() {
+    const cls = document.getElementById('roster-filter-class').value;
+    const sec = document.getElementById('roster-filter-section').value;
+    let filtered = globalActiveStudents;
+    if (cls !== 'ALL') filtered = filtered.filter(s => s.className === cls);
+    if (sec !== 'ALL') filtered = filtered.filter(s => s.section === sec);
+    renderStudentsRoster(filtered);
+}
+
+function renderStudentsRoster(students) {
+    const tbody = document.getElementById('roster-students-body');
+    if (!students.length) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="6">No students found for this filter.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = students.map(s => `<tr>
+        <td class="font-semibold">${s.fullName || '-'}</td>
+        <td style="color:#6b7280;font-size:12.5px;">${s.username}</td>
+        <td>${s.phone || '-'}</td>
+        <td style="text-align:center;"><span class="badge" style="background:#eff6ff;color:#1d4ed8;">${s.className || '-'} - ${s.section || '-'}</span></td>
+        <td style="text-align:center;color:#6b7280;font-size:12.5px;">${s.joiningDate || '-'}</td>
+        <td>
+            <div style="display:flex;justify-content:center;gap:6px;">
+                <button onclick="openEditModal(${s.id},'STUDENT','${(s.fullName||'').replace(/'/g,"\\'")}','${s.phone||''}','${s.joiningDate||''}','${s.className||''}','${s.section||''}',0)"
+                    class="btn btn-sm" style="background:#eff6ff;color:#1d4ed8;">
+                    <i data-lucide="pencil" style="width:11px;height:11px;"></i> Edit
+                </button>
+                <button onclick="openLeaveModal(${s.id})"
+                    class="btn btn-sm btn-danger">
+                    <i data-lucide="user-x" style="width:11px;height:11px;"></i> Left
+                </button>
+                <button onclick="openResetPwModal(${s.id}, '${(s.fullName||'').replace(/'/g, String.fromCharCode(92,39))}')"
+                    class="btn btn-sm" style="background:#fffbeb;color:#b45309;">
+                    <i data-lucide="key" style="width:11px;height:11px;"></i> Pwd
+                </button>
+            </div>
+        </td>
+    </tr>`).join('');
+    lucide.createIcons();
+}
+
+function renderTeachersRoster(teachers) {
+    const tbody = document.getElementById('roster-teachers-body');
+    if (!teachers.length) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="6">No teachers found.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = teachers.map(t => `<tr>
+        <td class="font-semibold">${t.fullName || '-'}</td>
+        <td style="color:#6b7280;font-size:12.5px;">${t.username}</td>
+        <td>${t.phone || '-'}</td>
+        <td style="text-align:center;"><span class="badge" style="background:#f0fdf4;color:#15803d;">₹${t.baseSalaryPerDay || 0}/day</span></td>
+        <td style="text-align:center;color:#6b7280;font-size:12.5px;">${t.joiningDate || '-'}</td>
+        <td>
+            <div style="display:flex;justify-content:center;gap:6px;">
+                <button onclick="openEditModal(${t.id},'TEACHER','${(t.fullName||'').replace(/'/g,"\\'")}','${t.phone||''}','${t.joiningDate||''}','','',${t.baseSalaryPerDay||0})"
+                    class="btn btn-sm" style="background:#eff6ff;color:#1d4ed8;">
+                    <i data-lucide="pencil" style="width:11px;height:11px;"></i> Edit
+                </button>
+                <button onclick="openLeaveModal(${t.id})"
+                    class="btn btn-sm btn-danger">
+                    <i data-lucide="user-x" style="width:11px;height:11px;"></i> Left
+                </button>
+                <button onclick="openResetPwModal(${t.id}, '${(t.fullName||'').replace(/'/g, String.fromCharCode(92,39))}')"
+                    class="btn btn-sm" style="background:#fffbeb;color:#b45309;">
+                    <i data-lucide="key" style="width:11px;height:11px;"></i> Pwd
+                </button>
+            </div>
+        </td>
+    </tr>`).join('');
+    lucide.createIcons();
+}
+
+function renderLeftRoster(users) {
+    const tbody = document.getElementById('roster-left-body');
+    if (!users.length) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="6">No deactivated accounts.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = users.map(u => `<tr>
+        <td class="font-semibold">${u.fullName || '-'}</td>
+        <td style="color:#6b7280;font-size:12.5px;">${u.username}</td>
+        <td><span class="badge" style="background:#f1f5f9;color:#475569;">${u.role}</span></td>
+        <td>${u.phone || '-'}</td>
+        <td style="text-align:center;color:#6b7280;font-size:12.5px;">${u.joiningDate || '-'}</td>
+        <td style="text-align:center;color:#6b7280;font-size:12.5px;">${u.leavingDate || '-'}</td>
+    </tr>`).join('');
+}
+
+// ─── EDIT MODAL ───────────────────────────────────────────────────────────────
+function openEditModal(id, role, fullName, phone, joiningDate, className, section, salary) {
+    document.getElementById('edit-user-id').value        = id;
+    document.getElementById('edit-user-role').value      = role;
+    document.getElementById('edit-fullName').value       = fullName;
+    document.getElementById('edit-phone').value          = phone;
+    document.getElementById('edit-joiningDate').value    = joiningDate;
+    document.getElementById('modal-title').textContent   = `Edit ${role === 'TEACHER' ? 'Teacher' : 'Student'}`;
+
+    if (role === 'STUDENT') {
+        document.getElementById('edit-student-fields').style.display = 'grid';
+        document.getElementById('edit-teacher-fields').style.display = 'none';
+        document.getElementById('edit-class').value   = className;
+        document.getElementById('edit-section').value = section;
+    } else {
+        document.getElementById('edit-student-fields').style.display = 'none';
+        document.getElementById('edit-teacher-fields').style.display = 'block';
+        document.getElementById('edit-salary').value = salary;
+    }
+
+    document.getElementById('edit-user-modal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+    document.getElementById('edit-user-modal').classList.add('hidden');
+}
+
+async function submitUserUpdate() {
+    const id   = document.getElementById('edit-user-id').value;
+    const role = document.getElementById('edit-user-role').value;
+
+    const payload = {
+        fullName:    document.getElementById('edit-fullName').value,
+        phone:       document.getElementById('edit-phone').value,
+        joiningDate: document.getElementById('edit-joiningDate').value
+    };
+
+    if (role === 'STUDENT') {
+        payload.className = document.getElementById('edit-class').value;
+        payload.section   = document.getElementById('edit-section').value;
+    } else if (role === 'TEACHER') {
+        payload.baseSalaryPerDay = parseFloat(document.getElementById('edit-salary').value) || 0;
+    }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/${id}/update`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error();
+        closeEditModal();
+        loadSchoolRoster();
+        alert('User updated successfully!');
+    } catch {
+        alert('Failed to update user. Try again.');
+    }
+}
+
+// ─── LEAVE / ARCHIVE MODAL ────────────────────────────────────────────────────
+function openLeaveModal(id) {
+    document.getElementById('leave-user-id').value     = id;
+    document.getElementById('leave-date-input').value  = new Date().toISOString().split('T')[0];
+    document.getElementById('leave-user-modal').classList.remove('hidden');
+}
+
+function closeLeaveModal() {
+    document.getElementById('leave-user-modal').classList.add('hidden');
+}
+
+// ─── RESET PASSWORD MODAL (ADMIN ONLY) ────────────────────────────────────────
+function openResetPwModal(userId, userName) {
+    document.getElementById('reset-pw-user-id').value        = userId;
+    document.getElementById('reset-pw-user-name').textContent = userName;
+    document.getElementById('reset-pw-new').value            = '';
+    document.getElementById('reset-pw-confirm').value        = '';
+    const statusEl = document.getElementById('reset-pw-status');
+    statusEl.textContent = '';
+    statusEl.className   = 'text-sm mb-3 hidden';
+    document.getElementById('reset-pw-modal').classList.remove('hidden');
+    lucide.createIcons();
+}
+
+function closeResetPwModal() {
+    document.getElementById('reset-pw-modal').classList.add('hidden');
+}
+
+async function submitPasswordReset() {
+    const userId      = document.getElementById('reset-pw-user-id').value;
+    const newPassword = document.getElementById('reset-pw-new').value.trim();
+    const confirm     = document.getElementById('reset-pw-confirm').value.trim();
+    const statusEl    = document.getElementById('reset-pw-status');
+
+    // Reset status message
+    statusEl.className   = 'text-sm mb-3 hidden';
+    statusEl.textContent = '';
+
+    // Basic checks before sending to server
+    if (!newPassword || newPassword.length < 4) {
+        statusEl.textContent = 'Password must be at least 4 characters.';
+        statusEl.className   = 'text-sm mb-3 text-red-600';
+        return;
+    }
+    if (newPassword !== confirm) {
+        statusEl.textContent = 'Passwords do not match. Please check and try again.';
+        statusEl.className   = 'text-sm mb-3 text-red-600';
+        return;
+    }
+
+    // Get the currently logged-in admin's ID from localStorage
+    const adminUserId = localStorage.getItem('userId');
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/${userId}/reset-password`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ adminUserId, newPassword })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            statusEl.textContent = data.message || 'Password reset successfully!';
+            statusEl.className   = 'text-sm mb-3 text-green-600';
+            // Auto-close after 2 seconds
+            setTimeout(closeResetPwModal, 2000);
+        } else {
+            statusEl.textContent = typeof data === 'string' ? data : 'Failed to reset password.';
+            statusEl.className   = 'text-sm mb-3 text-red-600';
+        }
+    } catch {
+        statusEl.textContent = 'Cannot connect to server. Check backend is running.';
+        statusEl.className   = 'text-sm mb-3 text-red-600';
+    }
+}
+
+async function submitUserLeaveArchive() {
+    const id          = document.getElementById('leave-user-id').value;
+    const leavingDate = document.getElementById('leave-date-input').value;
+
+    if (!leavingDate) { alert('Please select the leaving date.'); return; }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/${id}/leave?leavingDate=${leavingDate}`, { method: 'POST' });
+        if (!res.ok) throw new Error();
+        closeLeaveModal();
+        loadSchoolRoster();
+        alert('Account archived and deactivated successfully.');
+    } catch {
+        alert('Failed to archive user. Try again.');
+    }
+}
+
+// ─── PANEL 5: REGISTER USER ───────────────────────────────────────────────────
+function toggleRoleFields(role) {
+    document.getElementById('student-only-inputs').style.display = (role === 'STUDENT') ? 'grid' : 'none';
+    document.getElementById('teacher-only-inputs').style.display = (role === 'TEACHER') ? 'block' : 'none';
+}
+
+async function submitRegisterUser() {
+    const fullName = document.getElementById('reg-fullName').value.trim();
+    const phone    = document.getElementById('reg-phone').value.trim();
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value.trim();
+    const role     = document.getElementById('reg-role').value;
+    const statusMsg = document.getElementById('reg-status-message');
+
+    statusMsg.classList.add('hidden');
+    statusMsg.className = 'text-sm mb-3 hidden';
+
+    if (!fullName || !username || !password || !phone) {
+        statusMsg.textContent = 'Please fill in Name, Phone, Username, and Password.';
+        statusMsg.className   = 'text-sm mb-3 text-red-600';
+        statusMsg.classList.remove('hidden');
+        return;
+    }
+
+    const payload = { fullName, phone, username, password, role };
+    if (role === 'STUDENT') {
+        payload.className = document.getElementById('reg-class').value.trim();
+        payload.section   = document.getElementById('reg-section').value.trim();
+    } else if (role === 'TEACHER') {
+        payload.baseSalaryPerDay = parseFloat(document.getElementById('reg-salary').value) || 0;
+    }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            statusMsg.textContent = `Successfully registered new ${role} account!`;
+            statusMsg.className   = 'text-sm mb-3 text-green-600';
+            statusMsg.classList.remove('hidden');
+            // Reset form
+            ['reg-fullName','reg-phone','reg-username','reg-password','reg-class','reg-section','reg-salary']
+                .forEach(id => { document.getElementById(id).value = ''; });
+        } else {
+            const text = await res.text();
+            statusMsg.textContent = text || 'Registration failed. Username might already exist.';
+            statusMsg.className   = 'text-sm mb-3 text-red-600';
+            statusMsg.classList.remove('hidden');
+        }
+    } catch {
+        statusMsg.textContent = 'Cannot connect to server.';
+        statusMsg.className   = 'text-sm mb-3 text-red-600';
+        statusMsg.classList.remove('hidden');
+    }
+}
+
+// ─── EXPORT UTILITIES ─────────────────────────────────────────────────────────
+async function exportAllTeachers() {
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/teachers`);
+        if (!res.ok) throw new Error();
+        const teachers = await res.json();
+        const header = 'Name,Username,Phone,Daily Rate,Joining Date\n';
+        const rows   = teachers.map(t =>
+            `"${t.fullName||''}","${t.username}","${t.phone||''}","${t.baseSalaryPerDay||0}","${t.joiningDate||''}"`
+        ).join('\n');
+        downloadCSV('\uFEFF' + header + rows, 'KTCS_Teachers.csv');
+    } catch {
+        alert('Failed to export teachers. Check backend connection.');
+    }
+}
+
+async function exportAllStudents() {
+    try {
+        const res = await authFetch(`${API_BASE}/api/attendance/students/all`);
+        if (!res.ok) throw new Error();
+        const students = await res.json();
+        const header = 'Name,Username,Phone,Class,Section,Joining Date\n';
+        const rows   = students.map(s =>
+            `"${s.fullName||''}","${s.username}","${s.phone||''}","${s.className||''}","${s.section||''}","${s.joiningDate||''}"`
+        ).join('\n');
+        downloadCSV('\uFEFF' + header + rows, 'KTCS_Students.csv');
+    } catch {
+        alert('Failed to export students. Check backend connection.');
+    }
+}
+
+function downloadCSV(content, fileName) {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ─── WHATSAPP MESSAGING MODAL ─────────────────────────────────────────────────
+function openWAModal(phone, name) {
+    document.getElementById('wa-lead-name').textContent  = name;
+    document.getElementById('wa-lead-phone').textContent = phone;
+    document.getElementById('wa-raw-phone').value        = phone;
+    document.getElementById('wa-template-select').value  = 'TOUR';
+    applyWATemplate();
+    document.getElementById('whatsapp-modal').classList.remove('hidden');
+    lucide.createIcons();
+}
+
+function closeWAModal() {
+    document.getElementById('whatsapp-modal').classList.add('hidden');
+}
+
+function applyWATemplate() {
+    const template = document.getElementById('wa-template-select').value;
+    const name     = document.getElementById('wa-lead-name').textContent;
+    const body     = document.getElementById('wa-message-body');
+    if (template === 'TOUR') {
+        body.value = `Hello ${name}, thank you for visiting Kriti – The Concept School. We would love to invite you for a campus tour. Please let us know a convenient date and time!`;
+    } else if (template === 'FOLLOWUP') {
+        body.value = `Hi ${name}, we are following up on your admissions inquiry at KTCS. Registrations for the upcoming term are open. Do you have any questions we can help with?`;
+    } else {
+        body.value = '';
+    }
+}
+
+async function triggerWASend() {
+    const phone   = document.getElementById('wa-raw-phone').value;
+    const message = document.getElementById('wa-message-body').value.trim();
+    if (!message) { alert('Please enter a message.'); return; }
+
+    try {
+        const res = await authFetch(`${API_BASE}/api/messages/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, message })
+        });
+        if (res.ok) {
+            const data = await res.json();
+            alert(`Message sent! ${data.message}`);
+            closeWAModal();
+        } else {
+            throw new Error();
+        }
+    } catch {
+        // Fallback: open WhatsApp Web directly
+        let clean = phone.replace(/\D/g, '');
+        if (clean.length === 10) clean = '91' + clean;
+        window.open(`https://api.whatsapp.com/send?phone=${clean}&text=${encodeURIComponent(message)}`, '_blank');
+        closeWAModal();
+    }
+}
+</script>
+</body>
+</html>
