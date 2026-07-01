@@ -33,5 +33,5 @@ build/
 .vscode/
 
 ### SECURITY — Never commit credentials to GitHub ###
-# application.properties contains your DB password — keep it out of git
-src/main/resources/application.properties
+# We now commit a generic application.properties that uses env vars,
+# so we don't need to ignore the entire file anymore.

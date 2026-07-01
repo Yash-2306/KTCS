@@ -24,13 +24,25 @@ public class DatabaseInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         // Only run if the database has no users
         if (userRepository.count() == 0) {
-            System.out.println("Initializing default users in the database...");
+            System.out.println("Initializing default admin user in the database...");
             LocalDate defaultJoin = LocalDate.of(2026, 1, 1);
 
-            // 1. Create default Admin
+            // Read custom admin credentials from environment variables
+            // Defaults to "admin" and "admin123" for local testing
+            String adminUser = System.getenv("ADMIN_USERNAME");
+            String adminPass = System.getenv("ADMIN_PASSWORD");
+
+            if (adminUser == null || adminUser.isBlank()) {
+                adminUser = "admin";
+            }
+            if (adminPass == null || adminPass.isBlank()) {
+                adminPass = "admin123";
+            }
+
+            // Create admin
             User admin = new User(
-                    "admin",
-                    passwordEncoder.encode("admin123"),
+                    adminUser,
+                    passwordEncoder.encode(adminPass),
                     "ADMIN",
                     "Principal",
                     "9949789922"
@@ -38,60 +50,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             admin.setJoiningDate(defaultJoin);
             userRepository.save(admin);
 
-            // 2. Create 10 Teacher accounts using a loop
-            for (int i = 1; i <= 10; i++) {
-                User teacher = new User(
-                        "teacher" + i,
-                        passwordEncoder.encode("teacher123"),
-                        "TEACHER",
-                        "Teacher Number " + i,
-                        "994978992" + i
-                );
-                teacher.setBaseSalaryPerDay(1000.0 + (i * 100)); // Incremental rates (1100, 1200, ...)
-                teacher.setJoiningDate(defaultJoin.plusDays(i)); // Slightly staggered dates
-                userRepository.save(teacher);
-            }
-
-            // 3. Create default Student 1 (Class 10 - Section A)
-            User student1 = new User(
-                    "student",
-                    passwordEncoder.encode("student123"),
-                    "STUDENT",
-                    "John Connor",
-                    "9949789924"
-            );
-            student1.setClassName("10");
-            student1.setSection("A");
-            student1.setJoiningDate(defaultJoin);
-            userRepository.save(student1);
-
-            // 4. Create Student 2 (Class 10 - Section A)
-            User student2 = new User(
-                    "student2",
-                    passwordEncoder.encode("student123"),
-                    "STUDENT",
-                    "Thomas Edison",
-                    "9949789926"
-            );
-            student2.setClassName("10");
-            student2.setSection("A");
-            student2.setJoiningDate(defaultJoin.plusDays(5));
-            userRepository.save(student2);
-
-            // 5. Create Student 3 (Class 10 - Section B)
-            User student3 = new User(
-                    "student3",
-                    passwordEncoder.encode("student123"),
-                    "STUDENT",
-                    "Marie Curie",
-                    "9949789927"
-            );
-            student3.setClassName("10");
-            student3.setSection("B");
-            student3.setJoiningDate(defaultJoin.plusDays(10));
-            userRepository.save(student3);
-
-            System.out.println("Default users successfully created!");
+            System.out.println("Default admin user successfully created!");
         }
     }
 }
