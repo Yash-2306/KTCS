@@ -71,9 +71,41 @@
         .error-banner { background: #fee2e2; color: #dc2626; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 
         .grade-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
-    </style>
+
+        /* ── MOBILE RESPONSIVE ────────────────────────────────────── */
+        #mobile-topbar {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; height: 56px;
+            background: #1E3A5F; z-index: 50;
+            align-items: center; padding: 0 16px; gap: 12px;
+        }
+        #sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 30;
+        }
+        #sidebar-overlay.show { display: block; }
+        @media (max-width: 767px) {
+            #sidebar { left: -240px !important; transition: left 0.25s ease; }
+            #sidebar.open { left: 0 !important; }
+            #main-content { margin-left: 0 !important; padding: 16px; padding-top: 72px !important; }
+            #mobile-topbar { display: flex; }
+            .card { overflow-x: auto; }
+            .data-table { min-width: 540px; }
+        }    </style>
 </head>
 <body>
+<!-- Mobile Top Bar (only visible on phones) -->
+<div id="mobile-topbar">
+    <button onclick="toggleSidebar()" style="color:white;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:4px;">
+        <span style="display:block;width:22px;height:2px;background:white;border-radius:2px;"></span>
+        <span style="display:block;width:22px;height:2px;background:white;border-radius:2px;"></span>
+        <span style="display:block;width:22px;height:2px;background:white;border-radius:2px;"></span>
+    </button>
+    <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS" style="height:32px;width:auto;">
+    <span style="color:white;font-size:14px;font-weight:700;">KTCS Dashboard</span>
+</div>
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
 
 <!-- SIDEBAR -->
 <aside id="sidebar">
@@ -528,5 +560,23 @@ async function submitStudentMarks() {
     }
 }
 </script>
-</body>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('show');
+        }
+    </script>    <script>
+        // Close sidebar automatically when a nav link is tapped on mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-link').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    if (window.innerWidth < 768) {
+                        document.getElementById('sidebar').classList.remove('open');
+                        document.getElementById('sidebar-overlay').classList.remove('show');
+                    }
+                });
+            });
+        });
+    </script></body>
 </html>
