@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,18 +35,24 @@
     </script>
 
     <style>
+                html, body {
+            overflow-x: hidden;
+            overflow-y: auto;
+            min-height: 100%;
+        }
         body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
 
         /* ── SIDEBAR ──────────────────────────────────────────── */
         #sidebar {
             width: 240px;
-            min-height: 100vh;
+            height: 100vh;
             background: #1E3A5F;
             position: fixed;
             left: 0; top: 0;
             display: flex;
             flex-direction: column;
             z-index: 40;
+            overflow-y: auto;
         }
         #main-content {
             margin-left: 240px;
