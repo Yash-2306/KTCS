@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -238,6 +238,25 @@
         <button class="nav-link" onclick="switchPanel('register')" id="nav-register">
             <i data-lucide="user-plus" style="width:17px;height:17px;"></i>
             Add Student / Staff
+        </button>
+        <button class="nav-link" onclick="switchPanel('bulk-import')" id="nav-bulk-import">
+            <i data-lucide="upload" style="width:17px;height:17px;"></i>
+            Bulk CSV Import
+        </button>
+
+        <div style="padding: 10px 10px 6px; font-size:10px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.08em; margin-top:8px;">Communication</div>
+
+        <button class="nav-link" onclick="switchPanel('announcements')" id="nav-announcements">
+            <i data-lucide="megaphone" style="width:17px;height:17px;"></i>
+            Announcements
+        </button>
+        <button class="nav-link" onclick="switchPanel('timetable')" id="nav-timetable">
+            <i data-lucide="calendar-range" style="width:17px;height:17px;"></i>
+            Timetable
+        </button>
+        <button class="nav-link" onclick="switchPanel('audit')" id="nav-audit">
+            <i data-lucide="shield-alert" style="width:17px;height:17px;"></i>
+            Audit Log
         </button>
     </nav>
 
@@ -626,6 +645,132 @@
             </div>
         </div>
     </div>
+    </div>
+
+<!-- ═══════════════════════ PANEL: ANNOUNCEMENTS ══════════════════════ -->
+<div id="panel-announcements" class="panel">
+    <div class="card" style="padding:24px; margin-bottom:20px;">
+        <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:16px;">📢 Post New Announcement</h2>
+        <div style="display:grid;gap:12px;max-width:600px;">
+            <div>
+                <label class="form-label">Title</label>
+                <input id="ann-title" class="form-input" placeholder="e.g. School closed Monday" maxlength="200">
+            </div>
+            <div>
+                <label class="form-label">Message</label>
+                <textarea id="ann-content" class="form-input" rows="3" placeholder="Announcement details..." style="resize:vertical;"></textarea>
+            </div>
+            <div>
+                <label class="form-label">Visible to</label>
+                <select id="ann-role" class="form-input">
+                    <option value="ALL">Everyone (Students + Teachers)</option>
+                    <option value="TEACHER">Teachers only</option>
+                    <option value="STUDENT">Students only</option>
+                </select>
+            </div>
+            <button onclick="postAnnouncement()" class="btn btn-primary" style="width:fit-content;">
+                <i data-lucide="send" style="width:14px;height:14px;"></i> Post Announcement
+            </button>
+        </div>
+    </div>
+    <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;">All Announcements</h2>
+            <button onclick="loadAnnouncements()" class="btn btn-sm" style="background:#f1f5f9;">
+                <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Refresh
+            </button>
+        </div>
+        <div id="ann-list"><p style="color:#94a3b8;font-size:13px;">Loading...</p></div>
+    </div>
+</div>
+
+<!-- ═══════════════════════ PANEL: BULK IMPORT ═══════════════════════ -->
+<div id="panel-bulk-import" class="panel">
+    <div class="card" style="padding:24px; margin-bottom:20px;">
+        <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:8px;">📥 Bulk CSV Import</h2>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Upload a CSV file to create multiple students or teachers at once. Download the template to get started.</p>
+        <div style="background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:10px;padding:20px;margin-bottom:16px;">
+            <p style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;">CSV FORMAT (required columns):</p>
+            <code style="font-size:11px;color:#1e3a5f;background:#e2e8f0;padding:8px 12px;border-radius:6px;display:block;font-family:monospace;">
+                full_name, username, password, role, class_name, section, phone
+            </code>
+            <p style="font-size:11px;color:#94a3b8;margin-top:8px;">Example: Rahul Sharma, rahul123, Welcome@1, STUDENT, 10, A, 9876543210</p>
+            <button onclick="downloadCSVTemplate()" class="btn btn-sm" style="background:#1e3a5f;color:white;margin-top:10px;">
+                <i data-lucide="download" style="width:13px;height:13px;"></i> Download Template
+            </button>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCSVUpload()">
+            <button onclick="document.getElementById('csv-file-input').click()" class="btn btn-primary">
+                <i data-lucide="upload" style="width:14px;height:14px;"></i> Choose CSV File
+            </button>
+            <span id="csv-filename" style="font-size:13px;color:#64748b;">No file chosen</span>
+        </div>
+    </div>
+    <div id="csv-result" style="display:none;" class="card" style="padding:24px;"></div>
+</div>
+
+<!-- ═══════════════════════ PANEL: TIMETABLE ════════════════════════ -->
+<div id="panel-timetable" class="panel">
+    <div class="card" style="padding:24px;margin-bottom:20px;">
+        <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:16px;">🗓 Add Timetable Entry</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;max-width:800px;">
+            <div><label class="form-label">Class</label><input id="tt-class" class="form-input" placeholder="e.g. 10"></div>
+            <div><label class="form-label">Section</label><input id="tt-section" class="form-input" placeholder="e.g. A"></div>
+            <div><label class="form-label">Day</label>
+                <select id="tt-day" class="form-input">
+                    <option>MONDAY</option><option>TUESDAY</option><option>WEDNESDAY</option>
+                    <option>THURSDAY</option><option>FRIDAY</option><option>SATURDAY</option>
+                </select>
+            </div>
+            <div><label class="form-label">Period #</label><input id="tt-period" class="form-input" type="number" min="1" max="10" placeholder="1"></div>
+            <div><label class="form-label">Subject</label><input id="tt-subject" class="form-input" placeholder="e.g. Mathematics"></div>
+            <div><label class="form-label">Teacher</label><input id="tt-teacher" class="form-input" placeholder="e.g. Mrs. Priya"></div>
+            <div><label class="form-label">Start Time</label><input id="tt-start" class="form-input" placeholder="8:00 AM"></div>
+            <div><label class="form-label">End Time</label><input id="tt-end" class="form-input" placeholder="8:45 AM"></div>
+        </div>
+        <button onclick="addTimetableEntry()" class="btn btn-primary" style="margin-top:16px;width:fit-content;">
+            <i data-lucide="plus" style="width:14px;height:14px;"></i> Add Entry
+        </button>
+    </div>
+    <div class="card" style="padding:24px;">
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;">
+            <div><label class="form-label">View Class</label><input id="tt-view-class" class="form-input" placeholder="10" style="width:80px;"></div>
+            <div><label class="form-label">Section</label><input id="tt-view-section" class="form-input" placeholder="A" style="width:70px;"></div>
+            <button onclick="loadTimetable()" class="btn btn-primary btn-sm">Load</button>
+        </div>
+        <div id="tt-display" style="overflow-x:auto;"></div>
+    </div>
+</div>
+
+<!-- ═══════════════════════ PANEL: AUDIT LOG ════════════════════════ -->
+<div id="panel-audit" class="panel">
+    <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;">🔒 Audit Log</h2>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <select id="audit-limit" class="form-input" style="width:130px;font-size:12px;">
+                    <option value="50">Last 50</option>
+                    <option value="100" selected>Last 100</option>
+                    <option value="200">Last 200</option>
+                </select>
+                <button onclick="loadAuditLog()" class="btn btn-primary btn-sm">
+                    <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Refresh
+                </button>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="data-table">
+                <thead><tr>
+                    <th>Time</th><th>Action</th><th>Performed By</th><th>Target User</th><th>Details</th>
+                </tr></thead>
+                <tbody id="audit-tbody">
+                    <tr class="loading-row"><td colspan="5">Loading audit log...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 </main>
 
@@ -1548,5 +1693,188 @@ async function triggerWASend() {
                 });
             });
         });
-    </script></body>
+    </script>
+
+<script>
+// ── ANNOUNCEMENTS ─────────────────────────────────────────────────────
+async function loadAnnouncements() {
+    try {
+        const res = await authFetch(`${API_BASE}/api/announcements`);
+        const list = await res.json();
+        const div = document.getElementById('ann-list');
+        if (!list.length) { div.innerHTML = '<p style="color:#94a3b8;font-size:13px;">No announcements yet.</p>'; return; }
+        div.innerHTML = list.map(a => `
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:10px;background:#fafafa;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+                    <div>
+                        <div style="font-weight:700;font-size:14px;color:#1e293b;margin-bottom:4px;">${a.title}</div>
+                        <div style="font-size:13px;color:#475569;margin-bottom:6px;">${a.content}</div>
+                        <div style="font-size:11px;color:#94a3b8;">
+                            👤 ${a.createdBy} &nbsp;|&nbsp; 🎯 ${a.targetRole} &nbsp;|&nbsp; 🕐 ${new Date(a.createdAt).toLocaleString()}
+                        </div>
+                    </div>
+                    <button onclick="deleteAnnouncement(${a.id})" class="btn btn-danger btn-sm" style="flex-shrink:0;">
+                        <i data-lucide="trash-2" style="width:12px;height:12px;"></i>
+                    </button>
+                </div>
+            </div>`).join('');
+        lucide.createIcons();
+    } catch(e) { document.getElementById('ann-list').innerHTML = '<p style="color:#dc2626;">Failed to load.</p>'; }
+}
+
+async function postAnnouncement() {
+    const title = document.getElementById('ann-title').value.trim();
+    const content = document.getElementById('ann-content').value.trim();
+    const targetRole = document.getElementById('ann-role').value;
+    const createdBy = localStorage.getItem('username') || 'admin';
+    if (!title || !content) { alert('Title and message are required.'); return; }
+    try {
+        const res = await authFetch(`${API_BASE}/api/announcements`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, targetRole, createdBy })
+        });
+        if (res.ok) {
+            document.getElementById('ann-title').value = '';
+            document.getElementById('ann-content').value = '';
+            await loadAnnouncements();
+        }
+    } catch(e) { alert('Failed to post announcement.'); }
+}
+
+async function deleteAnnouncement(id) {
+    if (!confirm('Delete this announcement?')) return;
+    await authFetch(`${API_BASE}/api/announcements/${id}`, { method: 'DELETE' });
+    await loadAnnouncements();
+}
+
+// ── BULK CSV IMPORT ────────────────────────────────────────────────────
+function downloadCSVTemplate() {
+    const csv = 'full_name,username,password,role,class_name,section,phone\nRahul Sharma,rahul123,Welcome@1,STUDENT,10,A,9876543210\nPriya Mehta,priya.mehta,School@2,TEACHER,,,9876500000';
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'KTCS_Import_Template.csv';
+    a.click();
+}
+
+async function handleCSVUpload() {
+    const file = document.getElementById('csv-file-input').files[0];
+    if (!file) return;
+    document.getElementById('csv-filename').textContent = file.name;
+    const resultDiv = document.getElementById('csv-result');
+    resultDiv.style.display = 'block';
+    resultDiv.style.padding = '24px';
+    resultDiv.innerHTML = '<p style="color:#64748b;font-size:13px;">⏳ Uploading and processing...</p>';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/bulk-import`, { method: 'POST', body: formData });
+        const data = await res.json();
+        resultDiv.innerHTML = `
+            <div style="margin-bottom:16px;">
+                <span style="background:#dcfce7;color:#15803d;padding:6px 12px;border-radius:8px;font-weight:700;margin-right:10px;">✅ Created: ${data.totalCreated}</span>
+                <span style="background:#fee2e2;color:#dc2626;padding:6px 12px;border-radius:8px;font-weight:700;">❌ Failed: ${data.totalFailed}</span>
+            </div>
+            ${data.failed.length ? `<div style="font-size:12px;color:#dc2626;"><b>Failed rows:</b><br>${data.failed.map(f=>`<div style="margin-top:4px;">• ${f.username||'?'}: ${f.error}</div>`).join('')}</div>` : ''}
+            ${data.totalCreated > 0 ? '<p style="font-size:12px;color:#15803d;margin-top:8px;">✓ Created users can now log in with the passwords from the CSV.</p>' : ''}
+        `;
+    } catch(e) { resultDiv.innerHTML = '<p style="color:#dc2626;">Upload failed. Check CSV format.</p>'; }
+}
+
+// ── TIMETABLE ──────────────────────────────────────────────────────────
+async function addTimetableEntry() {
+    const entry = {
+        className: document.getElementById('tt-class').value.trim(),
+        section: document.getElementById('tt-section').value.trim(),
+        dayOfWeek: document.getElementById('tt-day').value,
+        periodNumber: parseInt(document.getElementById('tt-period').value),
+        subject: document.getElementById('tt-subject').value.trim(),
+        teacherName: document.getElementById('tt-teacher').value.trim(),
+        startTime: document.getElementById('tt-start').value.trim(),
+        endTime: document.getElementById('tt-end').value.trim()
+    };
+    if (!entry.className || !entry.section || !entry.subject || !entry.periodNumber) {
+        alert('Class, section, subject, and period number are required.'); return;
+    }
+    try {
+        const res = await authFetch(`${API_BASE}/api/timetable`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(entry)
+        });
+        if (res.ok) { alert('Entry added!'); loadTimetable(); }
+        else { const e = await res.text(); alert('Error: ' + e); }
+    } catch(e) { alert('Failed to add entry.'); }
+}
+
+async function loadTimetable() {
+    const cls = document.getElementById('tt-view-class').value.trim();
+    const sec = document.getElementById('tt-view-section').value.trim();
+    if (!cls || !sec) { alert('Enter class and section to view timetable.'); return; }
+    const div = document.getElementById('tt-display');
+    div.innerHTML = '<p style="color:#64748b;font-size:13px;">Loading...</p>';
+    try {
+        const res = await authFetch(`${API_BASE}/api/timetable/${cls}/${sec}`);
+        const entries = await res.json();
+        if (!entries.length) { div.innerHTML = '<p style="color:#94a3b8;font-size:13px;">No timetable entries for this class yet.</p>'; return; }
+        const days = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+        let html = '<table class="data-table"><thead><tr><th>Day</th><th>Period</th><th>Subject</th><th>Teacher</th><th>Time</th><th>Action</th></tr></thead><tbody>';
+        entries.forEach(e => {
+            html += `<tr>
+                <td>${e.dayOfWeek}</td>
+                <td>${e.periodNumber}</td>
+                <td>${e.subject}</td>
+                <td>${e.teacherName||'—'}</td>
+                <td>${e.startTime||''}${e.endTime?' – '+e.endTime:''}</td>
+                <td><button onclick="deleteTimetableEntry(${e.id})" class="btn btn-danger btn-sm"><i data-lucide="trash-2" style="width:12px;height:12px;"></i></button></td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        div.innerHTML = html;
+        lucide.createIcons();
+    } catch(e) { div.innerHTML = '<p style="color:#dc2626;">Failed to load timetable.</p>'; }
+}
+
+async function deleteTimetableEntry(id) {
+    if (!confirm('Delete this entry?')) return;
+    await authFetch(`${API_BASE}/api/timetable/${id}`, { method: 'DELETE' });
+    loadTimetable();
+}
+
+// ── AUDIT LOG ──────────────────────────────────────────────────────────
+async function loadAuditLog() {
+    const limit = document.getElementById('audit-limit').value;
+    const tbody = document.getElementById('audit-tbody');
+    tbody.innerHTML = '<tr class="loading-row"><td colspan="5">Loading...</td></tr>';
+    try {
+        const res = await authFetch(`${API_BASE}/api/audit?limit=${limit}`);
+        const logs = await res.json();
+        if (!logs.length) { tbody.innerHTML = '<tr class="loading-row"><td colspan="5">No audit records yet.</td></tr>'; return; }
+        const actionColors = {
+            'LOGIN': '#dcfce7', 'ACCOUNT_LOCKED': '#fee2e2', 'PASSWORD_RESET': '#fef9c3',
+            'USER_CREATED': '#dbeafe', 'USER_DELETED': '#fee2e2', 'BULK_IMPORT': '#ede9fe'
+        };
+        tbody.innerHTML = logs.map(l => `
+            <tr>
+                <td style="font-size:12px;white-space:nowrap;">${new Date(l.timestamp).toLocaleString()}</td>
+                <td><span style="background:${actionColors[l.action]||'#f1f5f9'};padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;">${l.action}</span></td>
+                <td style="font-size:13px;">${l.performedBy}</td>
+                <td style="font-size:13px;">${l.targetUser||'—'}</td>
+                <td style="font-size:12px;color:#64748b;">${l.details||'—'}</td>
+            </tr>`).join('');
+    } catch(e) { tbody.innerHTML = '<tr class="loading-row"><td colspan="5">Failed to load audit log.</td></tr>'; }
+}
+
+// Auto-load when switching to these panels
+const originalSwitchPanel = window.switchPanel;
+window.switchPanel = function(panel) {
+    if (originalSwitchPanel) originalSwitchPanel(panel);
+    if (panel === 'announcements') loadAnnouncements();
+    if (panel === 'audit') loadAuditLog();
+};
+</script>
+
+</body>
 </html>

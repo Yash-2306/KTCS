@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -129,6 +129,14 @@
         <button class="nav-link" onclick="switchPanel('marks')" id="nav-marks">
             <i data-lucide="file-check" style="width:17px;height:17px;"></i>
             Enter Marks
+        </button>
+        <button class="nav-link" onclick="switchPanel('announcements')" id="nav-announcements">
+            <i data-lucide="megaphone" style="width:17px;height:17px;"></i>
+            Announcements
+        </button>
+        <button class="nav-link" onclick="switchPanel('timetable')" id="nav-timetable">
+            <i data-lucide="calendar-range" style="width:17px;height:17px;"></i>
+            My Timetable
         </button>
     </nav>
 
@@ -300,6 +308,32 @@
         </div>
     </div>
 
+<!-- PANEL: ANNOUNCEMENTS -->
+<div id="panel-announcements" class="panel">
+    <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;">📢 Announcements</h2>
+            <button onclick="loadTeacherAnnouncements()" class="btn btn-sm" style="background:#f1f5f9;">
+                <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Refresh
+            </button>
+        </div>
+        <div id="teacher-ann-list"><p style="color:#94a3b8;font-size:13px;">Loading announcements...</p></div>
+    </div>
+</div>
+
+<!-- PANEL: TIMETABLE -->
+<div id="panel-timetable" class="panel">
+    <div class="card" style="padding:24px;">
+        <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:16px;">🗓 My Class Timetable</h2>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;">
+            <div><label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Class</label><input id="teach-tt-class" class="form-input" placeholder="10" style="width:80px;"></div>
+            <div><label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px;">Section</label><input id="teach-tt-section" class="form-input" placeholder="A" style="width:70px;"></div>
+            <button onclick="loadTeacherTimetable()" class="btn btn-primary btn-sm">Load</button>
+        </div>
+        <div id="teacher-tt-display" style="overflow-x:auto;"></div>
+    </div>
+</div>
+
 </main>
 
 <script>
@@ -323,8 +357,10 @@ window.onload = function() {
 
 // ─── NAVIGATION ──────────────────────────────────────────────────────────────
 const panelTitles = {
-    attendance: { title: 'Mark Attendance',   sub: 'Mark daily attendance for your class' },
-    marks:      { title: 'Enter Marks',        sub: 'Enter and update student exam marks' }
+    attendance:    { title: 'Mark Attendance',   sub: 'Mark daily attendance for your class' },
+    marks:         { title: 'Enter Marks',        sub: 'Enter and update student exam marks' },
+    announcements: { title: 'Announcements',      sub: 'View school announcements for teachers' },
+    timetable:     { title: 'My Timetable',       sub: 'View the class timetable by class and section' }
 };
 
 function switchPanel(id) {
@@ -337,6 +373,7 @@ function switchPanel(id) {
     document.getElementById('page-subtitle').textContent = meta.sub;
     lucide.createIcons();
     if (id === 'marks') fetchStudentsForMarksDropdown();
+    if (id === 'announcements') loadTeacherAnnouncements();
 }
 
 function handleLogout() {
@@ -578,5 +615,49 @@ async function submitStudentMarks() {
                 });
             });
         });
-    </script></body>
+    </script>
+<script>
+const TEACHER_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend-production.up.railway.app');
+
+async function loadTeacherAnnouncements() {
+    try {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        const res = await fetch(`${TEACHER_API_BASE}/api/announcements/for/TEACHER`, {
+            headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        const list = await res.json();
+        const div = document.getElementById('teacher-ann-list');
+        if (!list.length) { div.innerHTML = '<p style="color:#94a3b8;font-size:13px;">No announcements at the moment.</p>'; return; }
+        div.innerHTML = list.map(a => `
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;background:#fafafa;">
+                <div style="font-weight:700;font-size:14px;color:#1e293b;margin-bottom:4px;">${a.title}</div>
+                <div style="font-size:13px;color:#475569;margin-bottom:6px;">${a.content}</div>
+                <div style="font-size:11px;color:#94a3b8;">📅 ${new Date(a.createdAt).toLocaleString()}</div>
+            </div>`).join('');
+    } catch(e) { document.getElementById('teacher-ann-list').innerHTML = '<p style="color:#dc2626;">Failed to load.</p>'; }
+}
+
+async function loadTeacherTimetable() {
+    const cls = document.getElementById('teach-tt-class').value.trim();
+    const sec = document.getElementById('teach-tt-section').value.trim();
+    if (!cls || !sec) { alert('Enter class and section.'); return; }
+    const div = document.getElementById('teacher-tt-display');
+    div.innerHTML = '<p style="color:#64748b;font-size:13px;">Loading...</p>';
+    try {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        const res = await fetch(`${TEACHER_API_BASE}/api/timetable/${cls}/${sec}`, {
+            headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        const entries = await res.json();
+        if (!entries.length) { div.innerHTML = '<p style="color:#94a3b8;font-size:13px;">No timetable entries yet.</p>'; return; }
+        let html = '<table class="data-table"><thead><tr><th>Day</th><th>Period</th><th>Subject</th><th>Teacher</th><th>Time</th></tr></thead><tbody>';
+        entries.forEach(e => {
+            html += `<tr><td>${e.dayOfWeek}</td><td>${e.periodNumber}</td><td>${e.subject}</td><td>${e.teacherName||'—'}</td><td>${e.startTime||''}${e.endTime?' – '+e.endTime:''}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        div.innerHTML = html;
+    } catch(e) { div.innerHTML = '<p style="color:#dc2626;">Failed to load timetable.</p>'; }
+}
+</script>
+</body>
 </html>

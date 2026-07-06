@@ -84,8 +84,6 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- JWT — generates and verifies login tokens -->
-		<!-- Industry standard. Used by almost every backend that does auth. -->
-		<!-- Interview explanation: "We use JJWT to sign tokens with HS256 and verify them on every request" -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>
@@ -102,6 +100,22 @@
 			<artifactId>jjwt-jackson</artifactId>
 			<version>0.12.6</version>
 			<scope>runtime</scope>
+		</dependency>
+
+		<!-- OpenPDF — generates report card PDFs server-side -->
+		<!-- Free, Apache 2.0 licensed. Interview: "We used OpenPDF to generate student report cards as PDFs" -->
+		<dependency>
+			<groupId>com.github.librepdf</groupId>
+			<artifactId>openpdf</artifactId>
+			<version>2.0.3</version>
+		</dependency>
+
+		<!-- Apache Commons CSV — parses CSV files for bulk student import -->
+		<!-- Interview: "We used Commons CSV to parse uploaded CSV files and batch-import students" -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.12.0</version>
 		</dependency>
 
 	</dependencies>

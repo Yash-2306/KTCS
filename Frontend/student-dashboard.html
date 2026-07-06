@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -139,6 +139,14 @@
             <i data-lucide="calendar-days" style="width:17px;height:17px;"></i>
             My Attendance
         </button>
+        <button class="nav-link" onclick="switchPanel('announcements')" id="nav-announcements">
+            <i data-lucide="megaphone" style="width:17px;height:17px;"></i>
+            Announcements
+        </button>
+        <button class="nav-link" onclick="switchPanel('timetable')" id="nav-timetable">
+            <i data-lucide="calendar-range" style="width:17px;height:17px;"></i>
+            My Timetable
+        </button>
     </nav>
 
     <div style="padding:14px 16px;border-top:1px solid rgba(255,255,255,0.08);">
@@ -180,9 +188,7 @@
                 <button onclick="loadReportCard()" class="btn btn-sm btn-primary">
                     <i data-lucide="refresh-cw" style="width:12px;height:12px;"></i> Refresh
                 </button>
-                <button onclick="printReportCard()" class="btn btn-sm" style="background:#f0fdf4;color:#15803d;">
-                    <i data-lucide="printer" style="width:12px;height:12px;"></i> Print / Save PDF
-                </button>
+                <button onclick="downloadReportPDF()" class="btn" style="background:#1e3a5f;color:white;">⬇ Download PDF</button>
             </div>
         </div>
 
@@ -292,6 +298,29 @@
         </div>
     </div>
 
+<!-- PANEL: ANNOUNCEMENTS -->
+<div id="panel-announcements" class="panel">
+    <div class="card" style="padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;">📢 Announcements</h2>
+            <button onclick="loadStudentAnnouncements()" class="btn btn-sm" style="background:#f1f5f9;">
+                <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Refresh
+            </button>
+        </div>
+        <div id="student-ann-list"><p style="color:#94a3b8;font-size:13px;">Loading announcements...</p></div>
+    </div>
+</div>
+
+<!-- PANEL: TIMETABLE -->
+<div id="panel-timetable" class="panel">
+    <div class="card" style="padding:24px;">
+        <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:4px;">🗓 My Class Timetable</h2>
+        <p style="font-size:12px;color:#94a3b8;margin-bottom:16px;">Your timetable loads automatically based on your class and section.</p>
+        <button onclick="loadStudentTimetable()" class="btn btn-primary btn-sm" style="margin-bottom:16px;">Load My Timetable</button>
+        <div id="student-tt-display" style="overflow-x:auto;"></div>
+    </div>
+</div>
+
 </main>
 
 <script>
@@ -312,8 +341,10 @@ window.onload = function() {
 
 // ─── NAVIGATION ──────────────────────────────────────────────────────────────
 const panelTitles = {
-    report:     { title: 'My Report Card', sub: 'View your marks, grades, and performance' },
-    attendance: { title: 'My Attendance',  sub: 'Track your attendance history and monthly calendar' }
+    report:        { title: 'My Report Card', sub: 'View your marks, grades, and performance' },
+    attendance:    { title: 'My Attendance',  sub: 'Track your attendance history and monthly calendar' },
+    announcements: { title: 'Announcements',  sub: 'View school announcements for students' },
+    timetable:     { title: 'My Timetable',   sub: 'View your class timetable' }
 };
 
 function switchPanel(id) {
@@ -326,6 +357,8 @@ function switchPanel(id) {
     document.getElementById('page-subtitle').textContent = meta.sub;
     lucide.createIcons();
     if (id === 'attendance') loadAttendanceStats();
+    if (id === 'announcements') loadStudentAnnouncements();
+    if (id === 'timetable') loadStudentTimetable();
 }
 
 function handleLogout() {
@@ -664,5 +697,69 @@ function printReportCard() {
                 });
             });
         });
-    </script></body>
+    </script>
+<script>
+const STUDENT_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend-production.up.railway.app');
+
+async function loadStudentAnnouncements() {
+    try {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        const res = await fetch(`${STUDENT_API_BASE}/api/announcements/for/STUDENT`, {
+            headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        const list = await res.json();
+        const div = document.getElementById('student-ann-list');
+        if (!list.length) { div.innerHTML = '<p style="color:#94a3b8;font-size:13px;">No announcements at the moment.</p>'; return; }
+        div.innerHTML = list.map(a => `
+            <div style="border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;background:#fafafa;">
+                <div style="font-weight:700;font-size:14px;color:#1e293b;margin-bottom:4px;">${a.title}</div>
+                <div style="font-size:13px;color:#475569;margin-bottom:6px;">${a.content}</div>
+                <div style="font-size:11px;color:#94a3b8;">📅 ${new Date(a.createdAt).toLocaleString()}</div>
+            </div>`).join('');
+    } catch(e) { document.getElementById('student-ann-list').innerHTML = '<p style="color:#dc2626;">Failed to load.</p>'; }
+}
+
+async function loadStudentTimetable() {
+    const userId = localStorage.getItem('userId');
+    const div = document.getElementById('student-tt-display');
+    div.innerHTML = '<p style="color:#64748b;font-size:13px;">Loading...</p>';
+    // Get student profile first to know their class and section
+    try {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        // Get all students and find current student's class/section from stored data
+        const cls = localStorage.getItem('userClass') || prompt('Enter your class (e.g. 10):');
+        const sec = localStorage.getItem('userSection') || prompt('Enter your section (e.g. A):');
+        if (!cls || !sec) { div.innerHTML = '<p style="color:#94a3b8;">Class/section not available.</p>'; return; }
+        const res = await fetch(`${STUDENT_API_BASE}/api/timetable/${cls}/${sec}`, {
+            headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+        });
+        const entries = await res.json();
+        if (!entries.length) { div.innerHTML = '<p style="color:#94a3b8;font-size:13px;">No timetable entries yet.</p>'; return; }
+        let html = '<table class="data-table"><thead><tr><th>Day</th><th>Period</th><th>Subject</th><th>Teacher</th><th>Time</th></tr></thead><tbody>';
+        entries.forEach(e => {
+            html += `<tr><td>${e.dayOfWeek}</td><td>${e.periodNumber}</td><td>${e.subject}</td><td>${e.teacherName||'—'}</td><td>${e.startTime||''}${e.endTime?' – '+e.endTime:''}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        div.innerHTML = html;
+    } catch(e) { div.innerHTML = '<p style="color:#dc2626;">Failed to load timetable.</p>'; }
+}
+
+async function downloadReportPDF() {
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+    const examType = document.getElementById('report-exam-type')?.value || '';
+    if (!userId) { alert('Please log in again.'); return; }
+    const url = `${STUDENT_API_BASE}/api/marks/student/${userId}/report-card/pdf${examType ? '?examType=' + examType : ''}`;
+    try {
+        const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) { alert('No marks found to generate PDF.'); return; }
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `ReportCard_${examType||'ALL'}.pdf`;
+        a.click();
+    } catch(e) { alert('Failed to download PDF.'); }
+}
+</script>
+</body>
 </html>
