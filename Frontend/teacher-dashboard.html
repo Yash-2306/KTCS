@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -177,17 +177,13 @@
                 <div>
                     <label class="form-label">Class</label>
                     <select id="att-class" class="form-input" style="width:auto;" onchange="loadStudentAttendance()">
-                        <option value="8">Class 8</option>
-                        <option value="9">Class 9</option>
-                        <option value="10" selected>Class 10</option>
+                        <option value="">Loading...</option>
                     </select>
                 </div>
                 <div>
                     <label class="form-label">Section</label>
                     <select id="att-section" class="form-input" style="width:auto;" onchange="loadStudentAttendance()">
-                        <option value="A" selected>Section A</option>
-                        <option value="B">Section B</option>
-                        <option value="C">Section C</option>
+                        <option value="">Loading...</option>
                     </select>
                 </div>
                 <div>
@@ -243,17 +239,13 @@
                     <div>
                         <label class="form-label">Class</label>
                         <select id="marks-class" class="form-input" onchange="fetchStudentsForMarksDropdown()">
-                            <option value="8">Class 8</option>
-                            <option value="9">Class 9</option>
-                            <option value="10" selected>Class 10</option>
+                            <option value="">Loading...</option>
                         </select>
                     </div>
                     <div>
                         <label class="form-label">Section</label>
                         <select id="marks-section" class="form-input" onchange="fetchStudentsForMarksDropdown()">
-                            <option value="A" selected>Section A</option>
-                            <option value="B">Section B</option>
-                            <option value="C">Section C</option>
+                            <option value="">Loading...</option>
                         </select>
                     </div>
                     <div>
@@ -349,7 +341,7 @@ const API_BASE = 'https://ktcs-backend-production.up.railway.app';
 let cachedStudentAtt = [];
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-window.onload = function() {
+window.onload = async function() {
     lucide.createIcons();
     document.getElementById('sidebar-name').textContent = localStorage.getItem('fullName') || 'Teacher';
 
@@ -357,8 +349,73 @@ window.onload = function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('att-date').value = today;
 
+    // Load dynamic class/section filters first
+    await loadFilterOptions();
+
     loadStudentAttendance();
 };
+
+async function loadFilterOptions() {
+    try {
+        const res = await authFetch(`${API_BASE}/api/auth/users/active/students`);
+        if (!res.ok) throw new Error();
+        const students = await res.json();
+
+        // Standard classes + any custom ones from the DB
+        const defaultClasses = ['Nursery', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+        const dbClasses = students.map(s => s.className).filter(Boolean);
+        const classes = [...new Set([...defaultClasses, ...dbClasses])];
+
+        const classOrder = { 'Nursery': 1, 'LKG': 2, 'UKG': 3 };
+        classes.sort((a, b) => {
+            const orderA = classOrder[a] || 999;
+            const orderB = classOrder[b] || 999;
+            if (orderA !== orderB) return orderA - orderB;
+            return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        const defaultSections = ['A', 'B', 'C', 'D'];
+        const dbSections = students.map(s => s.section).filter(Boolean);
+        const sections = [...new Set([...defaultSections, ...dbSections])];
+        sections.sort();
+
+        // Populate selectors
+        const attClass = document.getElementById('att-class');
+        const attSection = document.getElementById('att-section');
+        const marksClass = document.getElementById('marks-class');
+        const marksSection = document.getElementById('marks-section');
+
+        const classHtml = classes.map(c => `<option value="${c}">${isNaN(c) ? c : 'Class ' + c}</option>`).join('');
+        const sectionHtml = sections.map(s => `<option value="${s}">Section ${s}</option>`).join('');
+
+        if (attClass) attClass.innerHTML = classHtml;
+        if (attSection) attSection.innerHTML = sectionHtml;
+        if (marksClass) marksClass.innerHTML = classHtml;
+        if (marksSection) marksSection.innerHTML = sectionHtml;
+
+        // Set default selections
+        if (attClass && classes.includes('10')) attClass.value = '10';
+        if (attSection && sections.includes('A')) attSection.value = 'A';
+        if (marksClass && classes.includes('10')) marksClass.value = '10';
+        if (marksSection && sections.includes('A')) marksSection.value = 'A';
+
+    } catch (e) {
+        console.error('Failed to load filter options:', e);
+        // Fallback in case of error
+        const fallbackClassHtml = ['8','9','10'].map(c => `<option value="${c}">Class ${c}</option>`).join('');
+        const fallbackSecHtml = ['A','B','C'].map(s => `<option value="${s}">Section ${s}</option>`).join('');
+
+        const attClass = document.getElementById('att-class');
+        const attSection = document.getElementById('att-section');
+        const marksClass = document.getElementById('marks-class');
+        const marksSection = document.getElementById('marks-section');
+
+        if (attClass) { attClass.innerHTML = fallbackClassHtml; attClass.value = '10'; }
+        if (attSection) { attSection.innerHTML = fallbackSecHtml; attSection.value = 'A'; }
+        if (marksClass) { marksClass.innerHTML = fallbackClassHtml; marksClass.value = '10'; }
+        if (marksSection) { marksSection.innerHTML = fallbackSecHtml; marksSection.value = 'A'; }
+    }
+}
 
 // ─── NAVIGATION ──────────────────────────────────────────────────────────────
 const panelTitles = {

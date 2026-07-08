@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -501,15 +501,9 @@
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                     <select id="roster-filter-class" onchange="filterRosterStudents()" class="form-input" style="width:auto;font-size:12px;padding:6px 10px;">
                         <option value="ALL">All Classes</option>
-                        <option value="8">Class 8</option>
-                        <option value="9">Class 9</option>
-                        <option value="10">Class 10</option>
                     </select>
                     <select id="roster-filter-section" onchange="filterRosterStudents()" class="form-input" style="width:auto;font-size:12px;padding:6px 10px;">
                         <option value="ALL">All Sections</option>
-                        <option value="A">Section A</option>
-                        <option value="B">Section B</option>
-                        <option value="C">Section C</option>
                     </select>
                 </div>
             </div>
@@ -1254,10 +1248,50 @@ async function loadActiveStudents() {
         const res = await authFetch(`${API_BASE}/api/auth/users/active/students`);
         if (!res.ok) throw new Error();
         globalActiveStudents = await res.json();
+        buildRosterFilters(globalActiveStudents);
         filterRosterStudents();
     } catch {
         document.getElementById('roster-students-body').innerHTML = '<tr class="loading-row"><td colspan="6" style="color:#dc2626;">Failed to load students.</td></tr>';
     }
+}
+
+function buildRosterFilters(students) {
+    const classSelect = document.getElementById('roster-filter-class');
+    const sectionSelect = document.getElementById('roster-filter-section');
+    if (!classSelect || !sectionSelect) return;
+
+    const prevClass = classSelect.value || 'ALL';
+    const prevSection = sectionSelect.value || 'ALL';
+
+    // Default options to make sure common classes/sections are always present,
+    // plus any custom ones from the DB
+    const defaultClasses = ['Nursery', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+    const dbClasses = students.map(s => s.className).filter(Boolean);
+    const classes = [...new Set([...defaultClasses, ...dbClasses])];
+
+    // Sort order: Nursery, LKG, UKG first, then numerical/alphabetical sorting
+    const classOrder = { 'Nursery': 1, 'LKG': 2, 'UKG': 3 };
+    classes.sort((a, b) => {
+        const orderA = classOrder[a] || 999;
+        const orderB = classOrder[b] || 999;
+        if (orderA !== orderB) return orderA - orderB;
+        return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    const defaultSections = ['A', 'B', 'C', 'D'];
+    const dbSections = students.map(s => s.section).filter(Boolean);
+    const sections = [...new Set([...defaultSections, ...dbSections])];
+    sections.sort();
+
+    classSelect.innerHTML = '<option value="ALL">All Classes</option>' + 
+        classes.map(c => `<option value="${c}">${isNaN(c) ? c : 'Class ' + c}</option>`).join('');
+
+    sectionSelect.innerHTML = '<option value="ALL">All Sections</option>' + 
+        sections.map(s => `<option value="${s}">Section ${s}</option>`).join('');
+
+    // Restore previous selection if still available
+    if (classes.includes(prevClass)) classSelect.value = prevClass;
+    if (sections.includes(prevSection)) sectionSelect.value = prevSection;
 }
 
 async function loadActiveTeachers() {
