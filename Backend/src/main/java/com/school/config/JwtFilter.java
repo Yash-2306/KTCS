@@ -35,7 +35,8 @@ public class JwtFilter extends OncePerRequestFilter {
     // These routes don't need a token — they're open to everyone
     private static final List<String> PUBLIC_ROUTES = List.of(
             "/api/auth/login",  // login itself — can't require auth to log in!
-            "/api/leads"        // contact form — public website visitors use this
+            "/api/leads",       // contact form — public website visitors use this
+            "/api/visitors"     // visitor analytics — fired from public pages with no token
     );
 
     @Override
