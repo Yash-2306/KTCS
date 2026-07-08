@@ -22,35 +22,11 @@ public class DatabaseInitializer implements CommandLineRunner {
     //PUBLIC STATIC VOID MAIN(String[]args)
     @Override
     public void run(String... args) throws Exception {
-        // Only run if the database has no users
-        if (userRepository.count() == 0) {
-            System.out.println("Initializing default admin user in the database...");
-            LocalDate defaultJoin = LocalDate.of(2026, 1, 1);
-
-            // Read custom admin credentials from environment variables
-            // Defaults to "admin" and "admin123" for local testing
-            String adminUser = System.getenv("ADMIN_USERNAME");
-            String adminPass = System.getenv("ADMIN_PASSWORD");
-
-            if (adminUser == null || adminUser.isBlank()) {
-                adminUser = "admin";
-            }
-            if (adminPass == null || adminPass.isBlank()) {
-                adminPass = "admin123";
-            }
-
-            // Create admin
-            User admin = new User(
-                    adminUser,
-                    passwordEncoder.encode(adminPass),
-                    "ADMIN",
-                    "Principal",
-                    "9949789922"
-            );
-            admin.setJoiningDate(defaultJoin);
-            userRepository.save(admin);
-
-            System.out.println("Default admin user successfully created!");
-        }
+        // Automatically delete the default admin account from the database if present
+        userRepository.findByUsername("admin").ifPresent(u -> {
+            userRepository.delete(u);
+            System.out.println("Default insecure 'admin' account deleted successfully!");
+        });
+        System.out.println("Database Initializer: Startup checks complete.");
     }
 }
