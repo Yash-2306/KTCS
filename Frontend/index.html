@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -198,5 +198,13 @@
     </div>
     </div>
     </section>
+    <script>
+        (async function() {
+            try {
+                const apiBase = 'https://ktcs-backend-production.up.railway.app';
+                await fetch(`${apiBase}/api/visitors/hit?page=MAIN_SITE`, { method: 'POST' });
+            } catch(e) {}
+        })();
+    </script>
 </body>
 </html>

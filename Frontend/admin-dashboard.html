@@ -264,6 +264,10 @@
             <i data-lucide="shield-alert" style="width:17px;height:17px;"></i>
             Audit Log
         </button>
+        <button class="nav-link" onclick="switchPanel('visitors')" id="nav-visitors">
+            <i data-lucide="trending-up" style="width:17px;height:17px;"></i>
+            Visitor Analytics
+        </button>
     </nav>
 
     <!-- User Info + Logout -->
@@ -772,6 +776,41 @@
     </div>
 </div>
 
+<!-- ═══════════════════════ PANEL: VISITOR ANALYTICS ════════════════════ -->
+<div id="panel-visitors" class="panel">
+    <!-- Stat widgets -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+        <div class="stat-card card" style="background: linear-gradient(135deg,#0f172a,#1e293b);">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:#38bdf8;letter-spacing:.06em;">Cumulative Visitors</p>
+            <p id="visitor-total-hits" style="font-size:34px;font-weight:800;color:white;margin-top:6px;">0</p>
+        </div>
+        <div class="stat-card card" style="background: linear-gradient(135deg,#1e3a5f,#3b82f6);">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:#93c5fd;letter-spacing:.06em;">Main Website Visits</p>
+            <p id="visitor-main-hits" style="font-size:34px;font-weight:800;color:white;margin-top:6px;">0</p>
+        </div>
+        <div class="stat-card card" style="background: linear-gradient(135deg,#581c87,#a855f7);">
+            <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:#f3e8ff;letter-spacing:.06em;">Dashboard Visits</p>
+            <p id="visitor-dash-hits" style="font-size:34px;font-weight:800;color:white;margin-top:6px;">0</p>
+        </div>
+    </div>
+
+    <!-- Explanatory Information Card for Recruiters -->
+    <div class="card" style="padding:24px; margin-bottom:20px;">
+        <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:8px;">💡 Recruiter Authentication Guide</h2>
+        <p style="font-size:13.5px;color:#475569;line-height:1.6;margin-bottom:14px;">
+            This analytics panel aggregates live, database-backed traffic counts from both the public-facing landing page and secured dashboards. It verifies system authenticity using stateless server counters.
+        </p>
+        <div style="background:#f8fafc; border-left:4px solid #1E3A5F; padding:12px 16px; border-radius:4px;">
+            <p style="font-size:12.5px;font-weight:700;color:#1e3a5f;margin-bottom:4px;">How It Works:</p>
+            <ul style="font-size:12px;color:#475569;list-style:disc;padding-left:18px;line-height:1.5;">
+                <li>Whenever a user lands on the school site home page, an asynchronous POST hit request is registered.</li>
+                <li>Accessing the dashboards triggers a separate secure API logging hit.</li>
+                <li>All data is saved in a persistent database (MySQL) via Spring Boot JPA using transactional upsert updates to prevent concurrency bottlenecks.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 </main>
 
 <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -936,11 +975,16 @@ window.onload = function() {
 
 // ─── SIDEBAR NAVIGATION ───────────────────────────────────────────────────────
 const panelTitles = {
-    leads:      { title: 'Walk-In Leads',         sub: 'View and manage walk-in inquiries from the Contact Us form' },
-    attendance: { title: 'Teacher Attendance',     sub: 'Mark and track daily teacher attendance' },
-    salary:     { title: 'Salary Calculator',      sub: 'Compute monthly teacher payouts based on attendance' },
-    roster:     { title: 'School Roster',          sub: 'Manage student and teacher profiles' },
-    register:   { title: 'Add Student / Staff',    sub: 'Register new student, teacher, or admin accounts' }
+    leads:         { title: 'Walk-In Leads',         sub: 'View and manage walk-in inquiries from the Contact Us form' },
+    attendance:    { title: 'Teacher Attendance',     sub: 'Mark and track daily teacher attendance' },
+    salary:        { title: 'Salary Calculator',      sub: 'Compute monthly teacher payouts based on attendance' },
+    roster:        { title: 'School Roster',          sub: 'Manage student and teacher profiles' },
+    register:      { title: 'Add Student / Staff',    sub: 'Register new student, teacher, or admin accounts' },
+    'bulk-import': { title: 'Bulk CSV Import',        sub: 'Upload student and teacher details via CSV file' },
+    announcements: { title: 'Announcements',          sub: 'Post notices to students, teachers, or all staff' },
+    timetable:     { title: 'Timetable',              sub: 'Manage weekly school class and section schedules' },
+    audit:         { title: 'Audit Log',              sub: 'Security and system access event logs' },
+    visitors:      { title: 'Visitor Analytics',      sub: 'Live counter of visits to home site and dashboards' }
 };
 
 function switchPanel(panelId) {
@@ -1907,12 +1951,30 @@ async function loadAuditLog() {
     } catch(e) { tbody.innerHTML = '<tr class="loading-row"><td colspan="5">Failed to load audit log.</td></tr>'; }
 }
 
+// ── VISITOR STATS ──────────────────────────────────────────────────────
+async function loadVisitorStats() {
+    try {
+        const res = await authFetch(`${API_BASE}/api/visitors/stats`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        document.getElementById('visitor-total-hits').textContent = (data.total || 0).toLocaleString();
+        document.getElementById('visitor-main-hits').textContent = (data.mainSite || 0).toLocaleString();
+        document.getElementById('visitor-dash-hits').textContent = (data.dashboards || 0).toLocaleString();
+    } catch(e) {
+        document.getElementById('visitor-total-hits').textContent = '—';
+        document.getElementById('visitor-main-hits').textContent = '—';
+        document.getElementById('visitor-dash-hits').textContent = '—';
+    }
+}
+
 // Auto-load when switching to these panels
 const originalSwitchPanel = window.switchPanel;
 window.switchPanel = function(panel) {
     if (originalSwitchPanel) originalSwitchPanel(panel);
     if (panel === 'announcements') loadAnnouncements();
     if (panel === 'audit') loadAuditLog();
+    if (panel === 'visitors') loadVisitorStats();
 };
 </script>
 

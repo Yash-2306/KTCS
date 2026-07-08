@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -284,6 +284,12 @@
                 });
             });
         });
+        (async function() {
+            try {
+                const apiBase = 'https://ktcs-backend-production.up.railway.app';
+                await fetch(`${apiBase}/api/visitors/hit?page=DASHBOARDS`, { method: 'POST' });
+            } catch(e) {}
+        })();
     </script>
 </body>
 </html>
