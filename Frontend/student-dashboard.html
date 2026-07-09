@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <nav style="flex:1;padding:14px 0;">
+    <nav style="flex:1;padding:14px 0;overflow-y:auto;">
         <div style="padding:0 10px 6px;font-size:10px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.08em;margin-top:6px;">My Academics</div>
         <button class="nav-link active" onclick="switchPanel('report')" id="nav-report">
             <i data-lucide="scroll-text" style="width:17px;height:17px;"></i>
@@ -567,142 +567,58 @@ function printReportCard() {
 
     // Build a complete HTML page as a string and open it in a new tab
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Report Card - ${name}</title>
-            <style>
-                body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; color: #1a1a1a; }
-                .header { text-align: center; border-bottom: 3px solid #1E3A5F; padding-bottom: 16px; margin-bottom: 24px; }
-                .school-name { font-size: 24px; font-weight: bold; color: #1E3A5F; }
-                .sub-title { font-size: 13px; color: #555; margin-top: 4px; }
-                .report-title { font-size: 18px; font-weight: bold; margin: 8px 0 0; color: #F5A623; }
-                .student-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
-                .student-info div { background: #f8f9fa; padding: 10px 16px; border-radius: 6px; flex: 1; margin: 0 5px; }
-                .student-info label { display: block; font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 3px; }
-                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
-                th { background: #1E3A5F; color: white; padding: 10px 14px; text-align: left; font-size: 12px; text-transform: uppercase; }
-                td { padding: 9px 14px; border-bottom: 1px solid #e8e8e8; }
-                tr:nth-child(even) { background: #f8f9fa; }
-                .summary-row { display: flex; gap: 10px; margin-bottom: 20px; }
-                .summary-box { flex: 1; text-align: center; padding: 12px; border-radius: 8px; background: #f1f5f9; }
-                .summary-box label { display: block; font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 4px; }
-                .summary-box span { font-size: 22px; font-weight: bold; color: #1E3A5F; }
-                .footer { text-align: center; font-size: 11px; color: #999; margin-top: 30px; border-top: 1px solid #eee; padding-top: 12px; }
-                @media print { body { margin: 20px; } }
-
-        /* ── MOBILE RESPONSIVE ────────────────────────────────────── */
-        #mobile-topbar {
-            display: none;
-            position: fixed; top: 0; left: 0; right: 0; height: 56px;
-            background: #1E3A5F; z-index: 50;
-            align-items: center; padding: 0 16px; gap: 12px;
-        }
-        #sidebar-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5); z-index: 30;
-        }
-        #sidebar-overlay.show { display: block; }
-        @media (max-width: 767px) {
-            #sidebar { left: -240px !important; transition: left 0.25s ease; }
-            #sidebar.open { left: 0 !important; }
-            #main-content { margin-left: 0 !important; padding: 16px; padding-top: 72px !important; }
-            #mobile-topbar { display: flex; }
-            .card { overflow-x: auto; }
-            .data-table { min-width: 540px; }
-        }            </style>
-        </head>
-        <body>
-<!-- Mobile Top Bar (only visible on phones) -->
-<div id="mobile-topbar">
-    <button onclick="toggleSidebar()" style="color:white;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:5px;padding:4px;">
-        <span style="display:block;width:22px;height:2px;background:white;border-radius:2px;"></span>
-        <span style="display:block;width:22px;height:2px;background:white;border-radius:2px;"></span>
-        <span style="display:block;width:22px;height:2px;background:white;border-radius:2px;"></span>
-    </button>
-    <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS" style="height:32px;width:auto;">
-    <span style="color:white;font-size:14px;font-weight:700;">KTCS Dashboard</span>
-</div>
-<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-            <div class="header">
-                <div class="school-name">Kriti – The Concept School</div>
-                <div class="sub-title">5-31-303, Saibaba Nagar, Suraram, Hyderabad – 500055</div>
-                <div class="report-title">Student Report Card — ${examLabel}</div>
-            </div>
-            <div class="student-info">
-                <div><label>Student Name</label>${name}</div>
-                <div><label>Date Generated</label>${today}</div>
-                <div><label>Exam Type</label>${examLabel}</div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Subject</th>
-                        <th style="text-align:center;">Marks Obtained</th>
-                        <th style="text-align:center;">Max Marks</th>
-                        <th style="text-align:center;">Percentage</th>
-                        <th style="text-align:center;">Grade</th>
-                    </tr>
-                </thead>
-                <tbody>${tableHTML}</tbody>
-            </table>
-            <div class="summary-row">
-                <div class="summary-box"><label>Total Score</label><span>${total}</span></div>
-                <div class="summary-box"><label>Percentage</label><span>${pct}</span></div>
-                <div class="summary-box"><label>Grade</label><span>${grade}</span></div>
-                <div class="summary-box"><label>Result</label><span>${result}</span></div>
-            </div>
-            <div class="footer">
-                This is a computer-generated report card from the KTCS Student Portal.<br>
-                Generated on ${today}
-            </div>
-            <script>window.onload = function() { window.print(); }<\/script>
-        
-    <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebar-overlay').classList.toggle('show');
-        }
-    </script>    <script>
-        // Close sidebar automatically when a nav link is tapped on mobile
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.nav-link').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    if (window.innerWidth < 768) {
-                        document.getElementById('sidebar').classList.remove('open');
-                        document.getElementById('sidebar-overlay').classList.remove('show');
-                    }
-                });
-            });
-        });
-    </script></body>
-        </html>
-    `);
+    printWindow.document.write(
+        '<!DOCTYPE html>' +
+        '<html lang="en"><head><meta charset="UTF-8">' +
+        '<title>Report Card - ' + name + '</title>' +
+        '<style>' +
+        'body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;color:#1a1a1a}' +
+        '.header{text-align:center;border-bottom:3px solid #1E3A5F;padding-bottom:16px;margin-bottom:24px}' +
+        '.school-name{font-size:24px;font-weight:bold;color:#1E3A5F}' +
+        '.sub-title{font-size:13px;color:#555;margin-top:4px}' +
+        '.report-title{font-size:18px;font-weight:bold;margin:8px 0 0;color:#F5A623}' +
+        '.student-info{display:flex;justify-content:space-between;margin-bottom:20px;font-size:14px}' +
+        '.student-info div{background:#f8f9fa;padding:10px 16px;border-radius:6px;flex:1;margin:0 5px}' +
+        '.student-info label{display:block;font-size:10px;font-weight:bold;color:#888;text-transform:uppercase;margin-bottom:3px}' +
+        'table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px}' +
+        'th{background:#1E3A5F;color:white;padding:10px 14px;text-align:left;font-size:12px;text-transform:uppercase}' +
+        'td{padding:9px 14px;border-bottom:1px solid #e8e8e8}' +
+        'tr:nth-child(even){background:#f8f9fa}' +
+        '.summary-row{display:flex;gap:10px;margin-bottom:20px}' +
+        '.summary-box{flex:1;text-align:center;padding:12px;border-radius:8px;background:#f1f5f9}' +
+        '.summary-box label{display:block;font-size:10px;font-weight:bold;color:#888;text-transform:uppercase;margin-bottom:4px}' +
+        '.summary-box span{font-size:22px;font-weight:bold;color:#1E3A5F}' +
+        '.footer{text-align:center;font-size:11px;color:#999;margin-top:30px;border-top:1px solid #eee;padding-top:12px}' +
+        '@media print{body{margin:20px}}' +
+        '</style></head><body>' +
+        '<div class="header">' +
+        '<div class="school-name">Kriti \u2013 The Concept School</div>' +
+        '<div class="sub-title">5-31-303, Saibaba Nagar, Suraram, Hyderabad \u2013 500055</div>' +
+        '<div class="report-title">Student Report Card \u2014 ' + examLabel + '</div>' +
+        '</div>' +
+        '<div class="student-info">' +
+        '<div><label>Student Name</label>' + name + '</div>' +
+        '<div><label>Date Generated</label>' + today + '</div>' +
+        '<div><label>Exam Type</label>' + examLabel + '</div>' +
+        '</div>' +
+        '<table><thead><tr>' +
+        '<th>Subject</th><th style="text-align:center">Marks Obtained</th>' +
+        '<th style="text-align:center">Max Marks</th><th style="text-align:center">Percentage</th>' +
+        '<th style="text-align:center">Grade</th>' +
+        '</tr></thead><tbody>' + tableHTML + '</tbody></table>' +
+        '<div class="summary-row">' +
+        '<div class="summary-box"><label>Total Score</label><span>' + total + '</span></div>' +
+        '<div class="summary-box"><label>Percentage</label><span>' + pct + '</span></div>' +
+        '<div class="summary-box"><label>Grade</label><span>' + grade + '</span></div>' +
+        '<div class="summary-box"><label>Result</label><span>' + result + '</span></div>' +
+        '</div>' +
+        '<div class="footer">This is a computer-generated report card from the KTCS Student Portal.<br>Generated on ' + today + '</div>' +
+        '<script>window.onload=function(){window.print()}<\/script>' +
+        '</body></html>'
+    );
     printWindow.document.close();
 }
 </script>
-
-    <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebar-overlay').classList.toggle('show');
-        }
-    </script>    <script>
-        // Close sidebar automatically when a nav link is tapped on mobile
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.nav-link').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    if (window.innerWidth < 768) {
-                        document.getElementById('sidebar').classList.remove('open');
-                        document.getElementById('sidebar-overlay').classList.remove('show');
-                    }
-                });
-            });
-        });
-    </script>
 <script>
 const STUDENT_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend-production.up.railway.app');
 
