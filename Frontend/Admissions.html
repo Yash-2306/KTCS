@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admissions 2025–26 — Kriti The Concept School</title>
-    <meta name="description" content="Join Kriti The Concept School. Admissions open for 2025–26. Small batches, experienced faculty, strong results. Suraram, Hyderabad.">
+    <title>Admissions - Kriti The Concept School</title>
     <link rel="icon" href="Assets/images/KTCS_logo-removebg-preview.png">
     <link rel="stylesheet" href="sample.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,378 +11,279 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { primary: '#1E3A5F', accent: '#F5A623' }
+                    colors: {
+                        primary: '#1E3A5F',
+                        accent: '#F5A623',
+                    }
                 }
             }
         }
     </script>
     <script src="sample.js" defer></script>
-    <script src="navbar.js" defer></script>
+<script src="navbar.js" defer></script></head>
+<body class="font-sans text-gray-800 bg-gray-50">
 
-    <style>
-        /* ── TICKER ── */
-        .ticker-wrap { overflow: hidden; white-space: nowrap; }
-        .ticker-inner { display: inline-block; animation: ticker 22s linear infinite; }
-        .ticker-inner:hover { animation-play-state: paused; }
-        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-
-        /* ── HERO ── */
-        .hero-overlay {
-            background: linear-gradient(120deg, rgba(4,25,47,0.82) 0%, rgba(4,25,47,0.55) 60%, rgba(245,166,35,0.18) 100%);
-        }
-
-        /* ── PILL BADGE ── */
-        .badge {
-            display: inline-block;
-            background: rgba(245,166,35,0.15);
-            color: #F5A623;
-            border: 1px solid rgba(245,166,35,0.4);
-            border-radius: 999px;
-            padding: 4px 14px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-
-        /* ── FEATURE CARDS ── */
-        .feat-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 28px 24px;
-            background: #fff;
-            transition: box-shadow .2s, transform .2s;
-        }
-        .feat-card:hover { box-shadow: 0 8px 32px rgba(30,58,95,0.10); transform: translateY(-3px); }
-        .feat-icon {
-            width: 48px; height: 48px;
-            background: #EFF6FF;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 16px;
-        }
-
-        /* Playfair replaced — use font-bold for headings like rest of site */
-        .serif-head { font-weight: 800; }
-
-        /* ── PROCESS STEPS ── */
-        .step-line {
-            position: absolute;
-            top: 24px; left: calc(50% + 24px);
-            width: calc(100% - 48px);
-            height: 2px;
-            background: repeating-linear-gradient(90deg, #d1d5db 0, #d1d5db 6px, transparent 6px, transparent 12px);
-        }
-
-        /* ── STAT BAR ── */
-        .stat-num {
-            font-size: 3rem;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        /* ── CTA ── */
-        .cta-section {
-            background: linear-gradient(135deg, #1E3A5F 0%, #0f2340 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            right: -80px; top: -80px;
-            width: 320px; height: 320px;
-            background: rgba(245,166,35,0.08);
-            border-radius: 50%;
-        }
-        .cta-section::after {
-            content: '';
-            position: absolute;
-            left: -60px; bottom: -60px;
-            width: 240px; height: 240px;
-            background: rgba(245,166,35,0.06);
-            border-radius: 50%;
-        }
-
-        .btn-primary-solid {
-            background: #F5A623;
-            color: #fff;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 15px;
-            display: inline-block;
-            transition: background .2s, transform .15s;
-        }
-        .btn-primary-solid:hover { background: #d4881a; transform: translateY(-1px); }
-
-        .btn-outline-white {
-            border: 2px solid rgba(255,255,255,0.5);
-            color: #fff;
-            padding: 13px 30px;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 15px;
-            display: inline-block;
-            transition: background .2s, border-color .2s;
-        }
-        .btn-outline-white:hover { background: rgba(255,255,255,0.08); border-color: #fff; }
-
-        /* ── PAMPHLET FRAME ── */
-        .pamphlet-frame {
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 24px 64px rgba(30,58,95,0.18);
-            position: relative;
-        }
-        .pamphlet-frame::after {
-            content: 'KTCS Prospectus 2025–26';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, rgba(4,25,47,0.85), transparent);
-            color: #fff;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 24px 18px 14px;
-            letter-spacing: .04em;
-        }
-
-    </style>
-</head>
-<body class="bg-white text-gray-800">
-
-<!-- ══════════ NAVBAR ══════════ -->
-<nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
-        <!-- Logo -->
-        <div class="flex items-center gap-3">
-            <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-10 w-auto">
-            <span class="text-lg font-bold text-white">Kriti – The Concept School</span>
-        </div>
-
-        <!-- Desktop nav links -->
-        <ul class="hidden md:flex items-center gap-8 font-medium text-white">
-            <li><a href="index.html" class="text-white hover:text-accent transition">Home</a></li>
-            <li><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
-            <li><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
-            <li><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
-            <li><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
-            <li>
-                <a href="Login.html" class="bg-accent text-white px-5 py-2 rounded-full hover:opacity-90 transition font-semibold">Login</a>
-            </li>
-        </ul>
-
-        <!-- Hamburger button -->
-        <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" onclick="toggleMenu()">
-            <span class="block w-6 h-0.5 bg-white"></span>
-            <span class="block w-6 h-0.5 bg-white"></span>
-            <span class="block w-6 h-0.5 bg-white"></span>
-        </button>
-    </div>
-
-    <!-- Mobile dropdown menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-[#04192f] px-6 pb-4 flex flex-col gap-4 text-white font-medium">
-        <a href="index.html" class="hover:text-accent transition py-1 border-b border-blue-900">Home</a>
-        <a href="About_us.html" class="hover:text-accent transition py-1 border-b border-blue-900">About Us</a>
-        <a href="Courses.html" class="hover:text-accent transition py-1 border-b border-blue-900">Courses</a>
-        <a href="Contact.html" class="hover:text-accent transition py-1 border-b border-blue-900">Contact</a>
-        <a href="Admissions.html" class="hover:text-accent transition py-1 border-b border-blue-900">Admissions</a>
-        <a href="Login.html" class="bg-accent text-white px-5 py-2 rounded-full font-semibold text-center mt-2">Login</a>
-    </div>
-</nav>
-
-<script>
-    function toggleMenu() {
-        const menu = document.getElementById('mobile-menu');
-        menu.classList.toggle('hidden');
-    }
-</script>
-
-<!-- ══════════ TICKER ══════════ -->
-<div class="fixed top-[72px] md:top-[68px] w-full bg-red-600 py-2.5 overflow-hidden z-40">
-    <div class="ticker-wrap">
-        <div class="ticker-inner text-white font-bold text-sm tracking-wider">
-            <span class="mx-10">★ ADMISSIONS OPEN — 2025–26</span>
-            <span class="mx-10">✔ LIMITED SEATS PER BATCH</span>
-            <span class="mx-10">☎ CALL: +91 99497 89922</span>
-            <span class="mx-10">★ ADMISSIONS OPEN — 2025–26</span>
-            <span class="mx-10">✔ LIMITED SEATS PER BATCH</span>
-            <span class="mx-10">☎ CALL: +91 99497 89922</span>
-        </div>
-    </div>
-</div>
-
-<!-- ══════════ HERO ══════════ -->
-<section class="relative min-h-[58vh] bg-cover bg-center flex items-center mt-[104px]"
-         style="background-image:url('Assets/images/Back_img.jpg')">
-    <div class="hero-overlay absolute inset-0"></div>
-    <div class="relative z-10 max-w-4xl mx-auto px-6 py-20">
-        <span class="badge mb-4 inline-block">Admissions 2025–26</span>
-        <h1 class="text-5xl md:text-6xl font-extrabold text-white leading-tight mt-2">
-            Shape Your Child's<br>Future Here.
-        </h1>
-        <p class="text-blue-100 mt-5 text-lg max-w-xl leading-relaxed">
-            A school that believes every child deserves personal attention, 
-            real understanding, and the confidence to excel — not just pass.
-        </p>
-        <div class="flex flex-wrap gap-4 mt-8">
-            <a href="Contact.html" class="inline-block bg-accent text-white px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition">Enquire Now</a>
-            <a href="tel:+919949789922" class="btn-outline-white">+91 99497 89922</a>
-        </div>
-    </div>
-</section>
-
-<!-- ══════════ STATS STRIP ══════════ -->
-<div class="bg-[#04192f] py-10">
-    <div class="max-w-4xl mx-auto px-6 grid grid-cols-3 divide-x divide-white/10 text-center">
-        <div class="px-4">
-            <p class="stat-num text-accent">300+</p>
-            <p class="text-gray-300 text-sm mt-1 font-medium">Students Enrolled</p>
-        </div>
-        <div class="px-4">
-            <p class="stat-num text-accent">10+</p>
-            <p class="text-gray-300 text-sm mt-1 font-medium">Expert Teachers</p>
-        </div>
-        <div class="px-4">
-            <p class="stat-num text-accent">7+</p>
-            <p class="text-gray-300 text-sm mt-1 font-medium">Years of Excellence</p>
-        </div>
-    </div>
-</div>
-
-<!-- ══════════ PAMPHLET + WHY CHOOSE ══════════ -->
-<section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-
-        <div class="reveal-left">
-            <div class="pamphlet-frame">
-                <img src="Assets/images/pamphlet.jpg" alt="KTCS School Prospectus" class="w-full object-cover">
+    <!-- NAVBAR -->
+    <nav class="fixed top-0 w-full bg-[#04192f] shadow-md z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-12 w-auto slide-left">
+                <span class="text-xl font-bold text-white slide-right">Kriti – The Concept School</span>
             </div>
+            <ul class="hidden md:flex items-center gap-8 font-medium text-white">
+                <li class="slide-down" style="animation-delay:0.1s"><a href="index.html" class="text-white hover:text-accent transition">Home</a></li>
+                <li class="slide-down" style="animation-delay:0.2s"><a href="About_us.html" class="text-white hover:text-accent transition">About Us</a></li>
+                <li class="slide-down" style="animation-delay:0.3s"><a href="Courses.html" class="text-white hover:text-accent transition">Courses</a></li>
+                <li class="slide-down" style="animation-delay:0.4s"><a href="Contact.html" class="text-white hover:text-accent transition">Contact</a></li>
+                <li class="slide-down" style="animation-delay:0.5s"><a href="Admissions.html" class="text-white hover:text-accent transition">Admissions</a></li>
+                <li class="slide-down" style="animation-delay:0.6s">
+                    <a href="Login.html" class="bg-primary text-white px-5 py-2 rounded-full hover:bg-accent transition font-semibold">Login</a>
+                </li>
+            </ul>
         </div>
+    </nav>
 
-        <div class="reveal-right">
-            <span class="badge mb-3 inline-block">Why Kriti?</span>
-            <h2 class="text-4xl font-bold text-primary mt-2 mb-4 leading-tight">
-                We prepare students<br>for life, not just exams.
-            </h2>
-            <p class="text-gray-500 text-base mb-8 leading-relaxed">
-                At Kriti – The Concept School, every child is seen, heard, and taught at their own pace. 
-                Our approach combines strong academics with genuine care.
+    <!-- MARQUEE BAR -->
+    <div class="fixed top-[72px] w-full bg-red-600 py-3 overflow-hidden z-40 text-center">
+        <p class="marquee-text text-white font-bold text-lg tracking-widest flex items-center gap-2" style="display:inline-flex;align-items:center;">
+            <!-- Star icon instead of 🎉 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" style="width:18px;height:18px;display:inline;vertical-align:middle;">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            ADMISSIONS OPEN 2025–26
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- Checkmark icon instead of ✅ -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" style="width:18px;height:18px;display:inline;vertical-align:middle;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            LIMITED SEATS AVAILABLE
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- Phone icon instead of 📞 -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:18px;height:18px;display:inline;vertical-align:middle;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+            CALL US: +91 99497 89922
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        </p>
+    </div>
+
+    <!-- HERO -->
+    <section style="background-image: url('Assets/images/Back_img.jpg')"
+             class="relative min-h-[50vh] bg-cover bg-center flex items-center justify-center text-white mt-[112px]">
+        <div class="absolute inset-0 bg-[#04192f] opacity-55"></div>
+        <div class="relative z-10 text-center px-6">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white reveal">
+                Begin Your Journey
+            </h1>
+            <p class="text-blue-200 mt-4 text-xl reveal" style="transition-delay:0.2s">
+                Admissions open for the academic year 2025–26
             </p>
+            <a href="Contact.html"
+               class="inline-block mt-8 bg-accent text-white px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition reveal"
+               style="transition-delay:0.4s">
+                Apply Now
+            </a>
+        </div>
+    </section>
 
-            <div class="space-y-5">
-                <div class="feat-card flex items-start gap-4">
-                    <div class="feat-icon flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1E3A5F" width="22" height="22"><path d="M12 2a5 5 0 100 10A5 5 0 0012 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z"/></svg>
-                    </div>
+    <!-- PAMPHLET + WHY JOIN -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+
+            <!-- Left: School Pamphlet Image -->
+            <div class="reveal-left">
+                <img src="Assets/images/pamphlet.jpg"
+                     alt="School Pamphlet"
+                     class="rounded-2xl shadow-2xl w-full object-cover">
+                <p class="text-center text-gray-400 text-sm mt-3">
+                    Kriti – The Concept School Prospectus 2025–26
+                </p>
+            </div>
+
+            <!-- Right: Why Join Us -->
+            <div class="reveal-right">
+                <h2 class="text-4xl font-bold text-primary mb-4"
+                    style="font-family:'Times New Roman'">
+                    Why Choose Kriti?
+                </h2>
+                <p class="text-gray-500 mb-8 text-lg">
+                    We don't just prepare students for exams — we prepare them for life.
+                </p>
+
+                <ul class="space-y-5">
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.1s">
+                        <span style="flex-shrink:0;margin-top:3px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#1E3A5F" style="width:20px;height:20px;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Small Batch Sizes</h3>
+                            <p class="text-gray-600">Every student gets personal attention from our teachers — no one gets left behind.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.2s">
+                        <span style="flex-shrink:0;margin-top:3px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#1E3A5F" style="width:20px;height:20px;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Experienced Faculty</h3>
+                            <p class="text-gray-600">Our teachers are passionate educators with years of experience in concept-based teaching.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.3s">
+                        <span style="flex-shrink:0;margin-top:3px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#1E3A5F" style="width:20px;height:20px;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Strong Academic Results</h3>
+                            <p class="text-gray-600">Consistently high board results with students achieving distinction year after year.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.4s">
+                        <span style="flex-shrink:0;margin-top:3px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#1E3A5F" style="width:20px;height:20px;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Holistic Development</h3>
+                            <p class="text-gray-600">Sports, arts, cultural events and leadership programs alongside academics.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.5s">
+                        <span style="flex-shrink:0;margin-top:3px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#1E3A5F" style="width:20px;height:20px;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Safe & Nurturing Environment</h3>
+                            <p class="text-gray-600">A warm, inclusive school community where every child thrives with confidence.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-4 reveal" style="transition-delay:0.6s">
+                        <span style="flex-shrink:0;margin-top:3px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#1E3A5F" style="width:20px;height:20px;">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <h3 class="font-bold text-primary text-lg">Affordable Fee Structure</h3>
+                            <p class="text-gray-600">Quality education that doesn't compromise on value or accessibility.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- STATS ROW -->
+    <section class="py-16 bg-primary">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
+            <div class="reveal">
+                <p class="text-5xl font-extrabold text-accent">300+</p>
+                <p class="text-white mt-2 font-medium">Students Enrolled</p>
+            </div>
+            <div class="reveal" style="transition-delay:0.1s">
+                <p class="text-5xl font-extrabold text-accent">10+</p>
+                <p class="text-white mt-2 font-medium">Expert Teachers</p>
+            </div>
+            <div class="reveal" style="transition-delay:0.2s">
+                <p class="text-5xl font-extrabold text-accent">7+</p>
+                <p class="text-white mt-2 font-medium">Years of Excellence</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMISSION PROCESS -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-3xl mx-auto px-6">
+            <h2 class="text-4xl font-bold text-primary mb-2 reveal" style="font-family:'Times New Roman'">
+                Admission Process
+            </h2>
+            <p class="text-gray-500 mb-10 reveal" style="transition-delay:0.1s">Simple, transparent and hassle-free</p>
+
+            <div class="space-y-8">
+                <div class="flex items-start gap-6 reveal" style="transition-delay:0.1s">
+                    <span style="font-family:'Times New Roman';font-size:2.5rem;font-weight:700;color:#F5A623;line-height:1;flex-shrink:0;">01</span>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base">Small Batches, Personal Attention</h3>
-                        <p class="text-gray-500 text-sm mt-0.5">Every student gets time with the teacher. No child gets left behind in the rush to cover a syllabus.</p>
+                        <h3 class="text-lg font-bold text-primary mb-1">Walk In / Call Us</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Visit us at school or call <span class="text-primary font-semibold">+91 99497 89922</span> to schedule a meeting with our admissions team.</p>
                     </div>
                 </div>
-                <div class="feat-card flex items-start gap-4">
-                    <div class="feat-icon flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1E3A5F" width="22" height="22"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-                    </div>
+                <div class="border-t border-gray-200"></div>
+                <div class="flex items-start gap-6 reveal" style="transition-delay:0.2s">
+                    <span style="font-family:'Times New Roman';font-size:2.5rem;font-weight:700;color:#F5A623;line-height:1;flex-shrink:0;">02</span>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base">Experienced, Passionate Faculty</h3>
-                        <p class="text-gray-500 text-sm mt-0.5">Our teachers don't just teach — they mentor. Years of experience in concept-based, not rote-based, education.</p>
+                        <h3 class="text-lg font-bold text-primary mb-1">Fill the Form</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Complete the admission form with student details. Our team will guide you through every step.</p>
                     </div>
                 </div>
-                <div class="feat-card flex items-start gap-4">
-                    <div class="feat-icon flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1E3A5F" width="22" height="22"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
-                    </div>
+                <div class="border-t border-gray-200"></div>
+                <div class="flex items-start gap-6 reveal" style="transition-delay:0.3s">
+                    <span style="font-family:'Times New Roman';font-size:2.5rem;font-weight:700;color:#F5A623;line-height:1;flex-shrink:0;">03</span>
                     <div>
-                        <h3 class="font-bold text-gray-800 text-base">Strong Academic Results</h3>
-                        <p class="text-gray-500 text-sm mt-0.5">Consistently high board results with students achieving distinctions year after year — backed by real teaching.</p>
-                    </div>
-                </div>
-                <div class="feat-card flex items-start gap-4">
-                    <div class="feat-icon flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#1E3A5F" width="22" height="22"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-base">Holistic Growth & Affordable Fees</h3>
-                        <p class="text-gray-500 text-sm mt-0.5">Sports, arts, cultural programs alongside academics — premium quality education without the premium price tag.</p>
+                        <h3 class="text-lg font-bold text-primary mb-1">Confirm &amp; Join</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">Submit documents, complete fee payment and your child becomes part of the KTCS family.</p>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-    </div>
-</section>
-
-<!-- ══════════ ADMISSION PROCESS ══════════ -->
-<section class="py-20 bg-white">
-    <div class="max-w-5xl mx-auto px-6">
-        <div class="text-center mb-14">
-            <span class="badge mb-3 inline-block">How It Works</span>
-            <h2 class="text-4xl font-bold text-primary mt-2">Simple Admission Process</h2>
-            <p class="text-gray-500 mt-3 text-base">Three straightforward steps — no complications, no hidden requirements.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Step 1 -->
-            <div class="reveal text-center" style="transition-delay:0.1s">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white font-bold text-lg mb-5 shadow-md">01</div>
-                <h3 class="font-bold text-gray-800 text-lg mb-2">Visit or Call Us</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">Come see the school in person or call <a href="tel:+919949789922" class="text-primary font-semibold hover:text-accent transition">+91 99497 89922</a> to speak with our admissions team directly.</p>
-            </div>
-            <!-- Step 2 -->
-            <div class="reveal text-center" style="transition-delay:0.2s">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white font-bold text-lg mb-5 shadow-md">02</div>
-                <h3 class="font-bold text-gray-800 text-lg mb-2">Submit the Form</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">Fill out the admission form with your child's details. Our team walks you through every requirement — no guesswork.</p>
-            </div>
-            <!-- Step 3 -->
-            <div class="reveal text-center" style="transition-delay:0.3s">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary text-white font-bold text-lg mb-5 shadow-md">03</div>
-                <h3 class="font-bold text-gray-800 text-lg mb-2">Confirm &amp; Join</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">Submit documents, complete enrollment, and your child officially becomes part of the Kriti family.</p>
+    <!-- CTA BANNER -->
+    <section class="py-16 bg-accent">
+        <div class="max-w-4xl mx-auto px-6 text-center reveal">
+            <h2 class="text-4xl font-extrabold text-white mb-4">
+                Seats are filling fast — don't miss out!
+            </h2>
+            <p class="text-white text-lg mb-8 opacity-90">
+                Contact us today and give your child the education they deserve.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="Contact.html"
+                   class="bg-white text-accent px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition">
+                    Contact Us
+                </a>
+                <a href="tel:+919949789922"
+                   class="border-2 border-white text-white px-10 py-4 rounded-full text-lg font-bold hover:bg-white hover:text-accent transition">
+                    Call Now
+                </a>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- ══════════ CTA BANNER ══════════ -->
-<section class="cta-section py-20">
-    <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
-        <span class="badge mb-4 inline-block">Limited Seats</span>
-        <h2 class="text-4xl md:text-5xl font-extrabold text-white mt-2 leading-tight">
-            Don't wait until<br>seats are gone.
-        </h2>
-        <p class="text-blue-200 mt-4 text-base leading-relaxed max-w-xl mx-auto">
-            We keep batches deliberately small. Once seats fill up, enrollment closes until the next academic year.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <a href="Contact.html" class="bg-white text-accent px-10 py-4 rounded-full text-lg font-bold hover:scale-105 transition">Get in Touch</a>
-            <a href="tel:+919949789922" class="btn-outline-white">Call +91 99497 89922</a>
-        </div>
-    </div>
-</section>
+    <!-- SOCIAL STRIP -->
+    <section class="py-2 bg-[#04192f] flex justify-end pr-5 gap-3 overflow-hidden">
+        <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="Youtube" class="h-6 object-contain"></a>
+        <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-6 object-contain"></a>
+        <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-6 object-contain"></a>
+    </section>
 
-<!-- ══════════ FOOTER ══════════ -->
-<footer class="bg-[#04192f]">
-    <div class="py-2 flex justify-end pr-6 gap-4">
-        <a href="https://www.youtube.com/@KRITITHECONCEPTSCHOOL" target="_blank"><img src="Assets/images/youtube.png" alt="YouTube" class="h-5 object-contain opacity-80 hover:opacity-100 transition"></a>
-        <a href="https://www.facebook.com/ktcs.suraram/photos" target="_blank"><img src="Assets/images/facebook.png" alt="Facebook" class="h-5 object-contain opacity-80 hover:opacity-100 transition"></a>
-        <a><img src="Assets/images/instagram.png" alt="Instagram" class="h-5 object-contain opacity-80 hover:opacity-100 transition"></a>
-        <a><img src="Assets/images/whatsapp.png" alt="WhatsApp" class="h-5 object-contain opacity-80 hover:opacity-100 transition"></a>
-    </div>
-    <div class="border-t border-white/10 py-8 px-10">
-        <div class="flex flex-col md:flex-row items-center gap-6">
-            <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-20 w-auto flex-shrink-0">
-            <div class="text-gray-400 text-sm space-y-1 text-center md:text-left">
-                <p class="text-white font-semibold">Kriti – The Concept School</p>
-                <p><a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6" target="_blank" class="hover:text-accent transition">5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055</a></p>
-                <p>ktcs.school@gmail.com &nbsp;·&nbsp; +91 99497 89922</p>
-                <p class="text-gray-500 text-xs pt-1">© 2026 Kriti – The Concept School. All rights reserved. &nbsp;·&nbsp; Designed &amp; Developed by Yashvardhan</p>
+    <!-- FOOTER -->
+    <section class="py-4 bg-[#04192f]">
+        <div class="pl-10 flex flex-col md:flex-row items-center gap-6">
+            <div class="reveal-left flex-shrink-0">
+                <img src="Assets/images/KTCS_logo-removebg-preview.png" alt="KTCS Logo" class="h-52 w-auto">
+            </div>
+            <div class="reveal-right text-center md:text-left text-gray-300 space-y-2">
+                <p>&copy; 2026 Kriti – The Concept School. All rights reserved.</p>
+                <p><a href="https://maps.app.goo.gl/7aEzvF5D5hibcaUk6" target="_blank" class="hover:text-accent transition">
+                    Address: 5-31-303, Saibaba Nagar, Suraram, Hyderabad, Telangana 500055
+                </a></p>
+                <p>Email: ktcs.school@gmail.com</p>
+                <p>Phone: +91 99497 89922</p>
+                <p class="text-sm text-gray-400 pt-2">Designed & Developed by Yashvardhan</p>
             </div>
         </div>
-    </div>
-</footer>
+    </section>
 
 </body>
 </html>
