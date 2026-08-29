@@ -118,6 +118,13 @@
 			<version>1.12.0</version>
 		</dependency>
 
+		<!-- Apache POI — reads and writes Excel .xlsx files for bulk import/export -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.5</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -40,6 +40,11 @@ public class User {
 
     private String fullName;
     private String phone;
+    private String phone2;
+    private String fatherName;
+    private String motherName;
+    private String designation;
+    private Integer rollNumber;
 
     // Student fields
     private String className;
@@ -94,6 +99,21 @@ public class User {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+
+    public String getPhone2() { return phone2; }
+    public void setPhone2(String phone2) { this.phone2 = phone2; }
+
+    public String getFatherName() { return fatherName; }
+    public void setFatherName(String fatherName) { this.fatherName = fatherName; }
+
+    public String getMotherName() { return motherName; }
+    public void setMotherName(String motherName) { this.motherName = motherName; }
+
+    public String getDesignation() { return designation; }
+    public void setDesignation(String designation) { this.designation = designation; }
+
+    public Integer getRollNumber() { return rollNumber; }
+    public void setRollNumber(Integer rollNumber) { this.rollNumber = rollNumber; }
 
     public String getClassName() { return className; }
     public void setClassName(String className) { this.className = className; }
