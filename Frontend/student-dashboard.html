@@ -330,7 +330,7 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const API_BASE = 'https://ktcs-backend-production.up.railway.app';
+const API_BASE = 'https://ktcs-backend.onrender.com';
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let globalAttendanceHistory = [];
@@ -620,7 +620,7 @@ function printReportCard() {
 }
 </script>
 <script>
-const STUDENT_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend-production.up.railway.app');
+const STUDENT_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend.onrender.com');
 
 async function loadStudentAnnouncements() {
     try {

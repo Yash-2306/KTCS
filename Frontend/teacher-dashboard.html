@@ -335,7 +335,7 @@
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-const API_BASE = 'https://ktcs-backend-production.up.railway.app';
+const API_BASE = 'https://ktcs-backend.onrender.com';
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let cachedStudentAtt = [];
@@ -679,7 +679,7 @@ async function submitStudentMarks() {
         });
     </script>
 <script>
-const TEACHER_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend-production.up.railway.app');
+const TEACHER_API_BASE = window.API_BASE || (localStorage.getItem('apiBase') || 'https://ktcs-backend.onrender.com');
 
 async function loadTeacherAnnouncements() {
     try {
