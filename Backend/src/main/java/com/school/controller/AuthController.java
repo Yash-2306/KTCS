@@ -335,6 +335,37 @@ public class AuthController {
                 "message", "Password for " + user.getFullName() + " has been reset successfully."));
     }
 
+    // ── 9.1 SELF-SERVICE CHANGE PASSWORD (For Students, Teachers, Admins) ──
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> data) {
+        String username = data.get("username");
+        String oldPassword = data.get("oldPassword");
+        String newPassword = data.get("newPassword");
+
+        if (username == null || oldPassword == null || newPassword == null || newPassword.trim().length() < 4) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Username, old password, and new password (min 4 chars) are required."));
+        }
+
+        Optional<User> userOpt = userRepository.findByUsername(username.trim());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "User not found."));
+        }
+
+        User user = userOpt.get();
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Incorrect old password."));
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword.trim()));
+        user.setLoginAttempts(0);
+        user.setLockedUntil(null);
+        userRepository.save(user);
+
+        audit("PASSWORD_CHANGE", user.getUsername(), user.getUsername(), "User changed their own password.");
+
+        return ResponseEntity.ok(Map.of("status", "SUCCESS", "message", "Password changed successfully."));
+    }
+
     // ── 10. EXCEL BULK IMPORT (Students & Teachers with Auto Roll No & Sorting) ──
     /**
      * Upload an .xlsx file with ONE or MULTIPLE sheets.
