@@ -337,12 +337,16 @@ public class AuthController {
 
     // ── 10. EXCEL BULK IMPORT (Students & Teachers with Auto Roll No & Sorting) ──
     /**
-     * Upload an .xlsx file containing student/teacher data.
-     * Supported columns: full_name, username, password, role, class_name, section,
-     * father_name, mother_name, phone, phone2, designation, base_salary_per_day
+     * Upload an .xlsx file with ONE or MULTIPLE sheets.
      *
-     * Students are automatically sorted alphabetically by full name, and roll numbers
-     * are auto-assigned (1, 2, 3...) per class and section.
+     * SHEET NAME MODES:
+     *  - Named like "10-A", "10A", "9-B" → sheet name auto-sets class_name + section
+     *    (no class_name/section columns needed in the sheet)
+     *  - Named like "Teachers" or "Staff" → treated as TEACHER role sheet
+     *  - Named anything else with class_name+section columns → uses those column values
+     *
+     * Roll numbers are assigned 1,2,3... alphabetically WITHIN EACH SHEET independently.
+     * Class 10-A: Aarav=1, Priya=2 | Class 10-B: Aditya=1, Sneha=2 (separate counters)
      */
     @PostMapping("/users/excel-import")
     public ResponseEntity<?> excelImport(@RequestParam("file") MultipartFile file) {
@@ -352,71 +356,90 @@ public class AuthController {
         List<Map<String, String>> failed  = new ArrayList<>();
 
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
-            Sheet sheet = workbook.getSheetAt(0);
-            Row headerRow = sheet.getRow(0);
-            if (headerRow == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Excel sheet has no header row."));
-            }
-
-            Map<String, Integer> colIndex = new HashMap<>();
-            for (int c = 0; c < headerRow.getLastCellNum(); c++) {
-                Cell cell = headerRow.getCell(c);
-                if (cell != null) {
-                    colIndex.put(cell.getStringCellValue().trim().toLowerCase().replace(" ", "_"), c);
-                }
-            }
-
-            List<Map<String, String>> rawRows = new ArrayList<>();
             DataFormatter fmt = new DataFormatter();
-            for (int r = 1; r <= sheet.getLastRowNum(); r++) {
-                Row row = sheet.getRow(r);
-                if (row == null) continue;
-                Map<String, String> data = new HashMap<>();
-                for (Map.Entry<String, Integer> entry : colIndex.entrySet()) {
-                    Cell cell = row.getCell(entry.getValue());
-                    data.put(entry.getKey(), cell != null ? fmt.formatCellValue(cell).trim() : "");
-                }
 
-                if (data.getOrDefault("username", "").isEmpty() &&
-                    data.getOrDefault("full_name", "").isEmpty()) {
-                    continue;
-                }
-                rawRows.add(data);
-            }
+            // Loop through ALL sheets
+            for (int s = 0; s < workbook.getNumberOfSheets(); s++) {
+                Sheet sheet = workbook.getSheetAt(s);
+                String sheetName = sheet.getSheetName().trim();
 
-            // Separate students and non-students
-            List<Map<String, String>> studentRows = new ArrayList<>();
-            List<Map<String, String>> otherRows = new ArrayList<>();
+                // Parse sheet name → class_name + section + role
+                // Pattern: "10-A", "10A", "9", "12-Science", "Teachers", "Staff"
+                String sheetClass = "";
+                String sheetSection = "";
+                String sheetRole = "STUDENT";
 
-            for (Map<String, String> row : rawRows) {
-                String role = row.getOrDefault("role", "STUDENT").trim().toUpperCase();
-                if ("STUDENT".equals(role)) {
-                    studentRows.add(row);
+                String lower = sheetName.toLowerCase();
+                if (lower.contains("teacher") || lower.contains("staff") || lower.contains("faculty")) {
+                    sheetRole = "TEACHER";
                 } else {
-                    otherRows.add(row);
+                    // Try to parse class-section from sheet name e.g. "10-A", "10A", "9-B", "12"
+                    java.util.regex.Matcher m = java.util.regex.Pattern
+                            .compile("^(\\d+)[^\\dA-Za-z]?([A-Za-z]?).*$")
+                            .matcher(sheetName.trim());
+                    if (m.matches()) {
+                        sheetClass = m.group(1);
+                        sheetSection = m.group(2);
+                    }
                 }
-            }
 
-            // Sort students alphabetically by full_name
-            studentRows.sort(Comparator.comparing(
-                    d -> d.getOrDefault("full_name", "").toLowerCase()));
+                Row headerRow = sheet.getRow(0);
+                if (headerRow == null) continue; // skip empty sheets
 
-            // Sort teachers / other roles alphabetically by full_name
-            otherRows.sort(Comparator.comparing(
-                    d -> d.getOrDefault("full_name", "").toLowerCase()));
+                Map<String, Integer> colIndex = new HashMap<>();
+                for (int c = 0; c < headerRow.getLastCellNum(); c++) {
+                    Cell cell = headerRow.getCell(c);
+                    if (cell != null) {
+                        String hdr = fmt.formatCellValue(cell).trim().toLowerCase().replace(" ", "_");
+                        if (!hdr.isEmpty()) colIndex.put(hdr, c);
+                    }
+                }
+                if (colIndex.isEmpty()) continue;
 
-            // Track roll number counters per Class-Section
-            Map<String, Integer> rollCounters = new LinkedHashMap<>();
+                // Read all data rows in this sheet
+                List<Map<String, String>> sheetRows = new ArrayList<>();
+                for (int r = 1; r <= sheet.getLastRowNum(); r++) {
+                    Row row = sheet.getRow(r);
+                    if (row == null) continue;
+                    Map<String, String> data = new HashMap<>();
+                    for (Map.Entry<String, Integer> entry : colIndex.entrySet()) {
+                        Cell cell = row.getCell(entry.getValue());
+                        data.put(entry.getKey(), cell != null ? fmt.formatCellValue(cell).trim() : "");
+                    }
+                    if (data.getOrDefault("username", "").isEmpty() &&
+                        data.getOrDefault("full_name", "").isEmpty()) continue;
 
-            // Process students with auto roll-numbers
-            for (Map<String, String> data : studentRows) {
-                processAndSaveUser(data, "STUDENT", rollCounters, created, failed);
-            }
+                    // Inject sheet-level class/section if not already in columns
+                    if (!sheetClass.isEmpty() && data.getOrDefault("class_name", "").isEmpty())
+                        data.put("class_name", sheetClass);
+                    if (!sheetSection.isEmpty() && data.getOrDefault("section", "").isEmpty())
+                        data.put("section", sheetSection);
+                    // Inject sheet-level role if not in row
+                    if (data.getOrDefault("role", "").isEmpty())
+                        data.put("role", sheetRole);
 
-            // Process teachers / admins
-            for (Map<String, String> data : otherRows) {
-                String role = data.getOrDefault("role", "TEACHER").trim().toUpperCase();
-                processAndSaveUser(data, role, rollCounters, created, failed);
+                    sheetRows.add(data);
+                }
+
+                // Sort alphabetically within this sheet
+                sheetRows.sort(Comparator.comparing(
+                        d -> d.getOrDefault("full_name", "").toLowerCase()));
+
+                // Roll number counter resets per sheet (per class-section)
+                int rollCounter = 1;
+                Map<String, Integer> rollCounters = new LinkedHashMap<>();
+
+                for (Map<String, String> data : sheetRows) {
+                    String role = data.getOrDefault("role", sheetRole).trim().toUpperCase();
+                    // For students in this sheet, override roll number sequentially
+                    if ("STUDENT".equals(role)) {
+                        String classKey = data.getOrDefault("class_name", sheetClass)
+                                + "-" + data.getOrDefault("section", sheetSection);
+                        int roll = rollCounters.getOrDefault(classKey, 0) + 1;
+                        rollCounters.put(classKey, roll);
+                    }
+                    processAndSaveUser(data, role, rollCounters, created, failed);
+                }
             }
 
         } catch (Exception e) {
@@ -439,27 +462,47 @@ public class AuthController {
                                     Map<String, Integer> rollCounters,
                                     List<Map<String, String>> created,
                                     List<Map<String, String>> failed) {
-        String username = data.getOrDefault("username", "");
-        String fullName = data.getOrDefault("full_name", "");
-        String password = data.getOrDefault("password", "");
-        String role     = data.getOrDefault("role", defaultRole).toUpperCase();
-        String className= data.getOrDefault("class_name", "");
-        String section  = data.getOrDefault("section", "");
-        String phone    = data.getOrDefault("phone", "");
-        String phone2   = data.getOrDefault("phone2", "");
-        String father   = data.getOrDefault("father_name", "");
-        String mother   = data.getOrDefault("mother_name", "");
-        String desig    = data.getOrDefault("designation", "");
-        String salaryStr= data.getOrDefault("base_salary_per_day", "");
+        String username = data.getOrDefault("username", "").trim();
+        String fullName = data.getOrDefault("full_name", "").trim();
+        String password = data.getOrDefault("password", "").trim();
+        String role     = data.getOrDefault("role", defaultRole).trim().toUpperCase();
+        String className= data.getOrDefault("class_name", "").trim();
+        String section  = data.getOrDefault("section", "").trim();
+        String phone    = data.getOrDefault("phone", "").trim();
+        String phone2   = data.getOrDefault("phone2", "").trim();
+        String father   = data.getOrDefault("father_name", "").trim();
+        String mother   = data.getOrDefault("mother_name", "").trim();
+        String desig    = data.getOrDefault("designation", "").trim();
+        String salaryStr= data.getOrDefault("base_salary_per_day", "").trim();
 
         try {
-            if (username.isEmpty() || password.isEmpty()) {
+            if (fullName.isEmpty() && username.isEmpty()) {
                 Map<String, String> err = new HashMap<>();
-                err.put("username", username.isEmpty() ? "(missing)" : username);
-                err.put("fullName", fullName);
-                err.put("error", "Username and password are required.");
+                err.put("username", "(missing)");
+                err.put("fullName", "(missing)");
+                err.put("error", "Both Full Name and Username are missing.");
                 failed.add(err);
                 return;
+            }
+
+            // Auto-generate username from full_name if blank
+            if (username.isEmpty()) {
+                String cleanName = fullName.toLowerCase().replaceAll("[^a-z0-9]", ".");
+                cleanName = cleanName.replaceAll("\\.+", ".").replaceAll("^\\.|\\.$", "");
+                if (cleanName.isEmpty()) cleanName = "user";
+                
+                String candidate = cleanName;
+                int suffix = 1;
+                while (userRepository.findByUsername(candidate).isPresent()) {
+                    candidate = cleanName + suffix;
+                    suffix++;
+                }
+                username = candidate;
+            }
+
+            // Auto-generate default password if blank
+            if (password.isEmpty()) {
+                password = "STUDENT".equals(role) ? "Student@123" : "Teacher@123";
             }
 
             if (userRepository.findByUsername(username).isPresent()) {
@@ -473,7 +516,7 @@ public class AuthController {
 
             User u = new User();
             u.setUsername(username);
-            u.setFullName(fullName);
+            u.setFullName(fullName.isEmpty() ? username : fullName);
             u.setPassword(passwordEncoder.encode(password));
             u.setRole(role);
             u.setClassName(className.isEmpty() ? null : className);
@@ -502,7 +545,8 @@ public class AuthController {
 
             Map<String, String> ok = new HashMap<>();
             ok.put("username", username);
-            ok.put("fullName", fullName);
+            ok.put("fullName", u.getFullName());
+            ok.put("password", password);
             ok.put("role", role);
             if (u.getRollNumber() != null) {
                 ok.put("rollNumber", String.valueOf(u.getRollNumber()));
