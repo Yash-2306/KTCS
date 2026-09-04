@@ -531,33 +531,41 @@ public class AuthController {
                 username = candidate;
             }
 
-            // Auto-generate default password if blank
-            if (password.isEmpty()) {
-                password = "STUDENT".equals(role) ? "Student@123" : "Teacher@123";
+            // Check if user already exists -> update profile & password
+            Optional<User> existingOpt = userRepository.findByUsername(username);
+            User u;
+            boolean isNew = existingOpt.isEmpty();
+
+            if (isNew) {
+                u = new User();
+                u.setUsername(username);
+                // Set initial password for new user
+                if (password.isEmpty() || "[re-enter password]".equalsIgnoreCase(password)) {
+                    password = "STUDENT".equals(role) ? "Student@123" : "Teacher@123";
+                }
+                u.setPassword(passwordEncoder.encode(password));
+                u.setJoiningDate(LocalDate.now());
+            } else {
+                u = existingOpt.get();
+                // If a new password is set in Excel (and not blank or placeholder), update password and unlock
+                if (!password.isEmpty() && !"[re-enter password]".equalsIgnoreCase(password)) {
+                    u.setPassword(passwordEncoder.encode(password));
+                    u.setLoginAttempts(0);
+                    u.setLockedUntil(null);
+                } else {
+                    password = "[unchanged]";
+                }
             }
 
-            if (userRepository.findByUsername(username).isPresent()) {
-                Map<String, String> err = new HashMap<>();
-                err.put("username", username);
-                err.put("fullName", fullName);
-                err.put("error", "Username already exists in database.");
-                failed.add(err);
-                return;
-            }
-
-            User u = new User();
-            u.setUsername(username);
-            u.setFullName(fullName.isEmpty() ? username : fullName);
-            u.setPassword(passwordEncoder.encode(password));
+            if (!fullName.isEmpty()) u.setFullName(fullName);
             u.setRole(role);
-            u.setClassName(className.isEmpty() ? null : className);
-            u.setSection(section.isEmpty() ? null : section);
-            u.setPhone(phone.isEmpty() ? null : phone);
-            u.setPhone2(phone2.isEmpty() ? null : phone2);
-            u.setFatherName(father.isEmpty() ? null : father);
-            u.setMotherName(mother.isEmpty() ? null : mother);
-            u.setDesignation(desig.isEmpty() ? null : desig);
-            u.setJoiningDate(LocalDate.now());
+            if (!className.isEmpty()) u.setClassName(className);
+            if (!section.isEmpty()) u.setSection(section);
+            if (!phone.isEmpty()) u.setPhone(phone);
+            if (!phone2.isEmpty()) u.setPhone2(phone2);
+            if (!father.isEmpty()) u.setFatherName(father);
+            if (!mother.isEmpty()) u.setMotherName(mother);
+            if (!desig.isEmpty()) u.setDesignation(desig);
 
             if (!salaryStr.isEmpty()) {
                 try {
@@ -579,6 +587,7 @@ public class AuthController {
             ok.put("fullName", u.getFullName());
             ok.put("password", password);
             ok.put("role", role);
+            ok.put("status", isNew ? "CREATED" : "UPDATED");
             if (u.getRollNumber() != null) {
                 ok.put("rollNumber", String.valueOf(u.getRollNumber()));
             }
