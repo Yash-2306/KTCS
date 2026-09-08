@@ -3,6 +3,8 @@ package com.school.controller;
 import com.school.model.AuditLog;
 import com.school.model.LeftUser;
 import com.school.model.User;
+import com.school.repository.AttendanceRepository;
+import com.school.repository.MarkRepository;
 import com.school.repository.AuditLogRepository;
 import com.school.repository.LeftUserRepository;
 import com.school.repository.UserRepository;
@@ -37,6 +39,8 @@ public class AuthController {
     private final UserRepository userRepository;
     private final LeftUserRepository leftUserRepository;
     private final AuditLogRepository auditLogRepository;
+    private final AttendanceRepository attendanceRepository;
+    private final MarkRepository markRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -47,10 +51,14 @@ public class AuthController {
     public AuthController(UserRepository userRepository,
                           LeftUserRepository leftUserRepository,
                           AuditLogRepository auditLogRepository,
+                          AttendanceRepository attendanceRepository,
+                          MarkRepository markRepository,
                           JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.leftUserRepository = leftUserRepository;
         this.auditLogRepository = auditLogRepository;
+        this.attendanceRepository = attendanceRepository;
+        this.markRepository = markRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
         this.jwtUtil = jwtUtil;
     }
@@ -287,6 +295,48 @@ public class AuthController {
     @GetMapping("/users/left")
     public ResponseEntity<List<LeftUser>> getLeftUsers() {
         return ResponseEntity.ok(leftUserRepository.findAll());
+    }
+
+    // ── 6.1 CLEAR ALL DATA (wipe students + teachers + their records) ──
+    @DeleteMapping("/users/clear-all")
+    public ResponseEntity<?> clearAllData(@RequestHeader("Authorization") String authHeader) {
+        // Extract username from JWT token
+        if (authHeader == null || !authHeader.startsWith("Bearer "))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Missing or invalid token."));
+
+        String token = authHeader.substring(7);
+        String username;
+        try { username = jwtUtil.extractUsername(token); }
+        catch (Exception e) { return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Invalid token.")); }
+
+        Optional<User> adminOpt = userRepository.findByUsername(username);
+        if (adminOpt.isEmpty() || !"ADMIN".equals(adminOpt.get().getRole()))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Only admins can clear all data."));
+
+        // Count what we're about to delete (for the summary)
+        long students = userRepository.findByRole("STUDENT").size();
+        long teachers = userRepository.findByRole("TEACHER").size();
+
+        // Delete all dependent records first (foreign key order)
+        markRepository.deleteAll();
+        attendanceRepository.deleteAll();
+        leftUserRepository.deleteAll();
+
+        // Delete all non-admin users
+        List<User> nonAdmins = userRepository.findAll().stream()
+                .filter(u -> !"ADMIN".equals(u.getRole()))
+                .toList();
+        userRepository.deleteAll(nonAdmins);
+
+        audit("CLEAR_ALL_DATA", username, null,
+                "Admin wiped all data: " + students + " students, " + teachers + " teachers removed.");
+
+        return ResponseEntity.ok(Map.of(
+                "status", "SUCCESS",
+                "message", "All data cleared. Admin accounts preserved.",
+                "studentsRemoved", students,
+                "teachersRemoved", teachers
+        ));
     }
 
     // ── 7. GET ACTIVE STUDENTS ────────────────────────────────────────

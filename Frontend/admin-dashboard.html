@@ -751,6 +751,20 @@
         <div id="excel-result" style="display:none; margin-top:16px;"></div>
     </div>
 
+    <!-- DANGER ZONE: CLEAR ALL DATA -->
+    <div class="card" style="padding:24px; margin-bottom:20px; border:1.5px solid #fecaca; background:#fff5f5;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+                <h2 style="font-size:15px;font-weight:700;color:#dc2626;margin-bottom:4px;">⚠️ Clear All Data &amp; Start Fresh</h2>
+                <p style="font-size:13px;color:#6b7280;">Permanently deletes all students, teachers, attendance records, and marks. Your admin account is preserved. Use this to fix duplicate imports or start over cleanly.</p>
+            </div>
+            <button onclick="confirmClearAll()" class="btn" style="background:#dc2626;color:white;font-size:13px;white-space:nowrap;">
+                <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Clear All Data
+            </button>
+        </div>
+        <div id="clear-all-result" style="display:none;margin-top:12px;"></div>
+    </div>
+
     <!-- LEGACY CSV BULK IMPORT -->
     <div class="card" style="padding:24px; margin-bottom:20px;">
         <h2 style="font-size:16px;font-weight:700;color:#1e3a5f;margin-bottom:8px;">📥 Bulk CSV Import</h2>
@@ -2146,6 +2160,45 @@ window.switchPanel = function(panel) {
     if (panel === 'audit') loadAuditLog();
     if (panel === 'visitors') loadVisitorStats();
 };
+
+// ── CLEAR ALL DATA ──────────────────────────────────────────────────────
+async function confirmClearAll() {
+    const first = confirm('⚠️ WARNING: This will permanently delete ALL students, teachers, attendance, and marks.\n\nYour admin account will be preserved.\n\nAre you sure you want to continue?');
+    if (!first) return;
+
+    const second = prompt('Type  DELETE ALL  (in capitals) to confirm:');
+    if (second !== 'DELETE ALL') {
+        alert('Cancelled. You must type exactly: DELETE ALL');
+        return;
+    }
+
+    const resultDiv = document.getElementById('clear-all-result');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<p style="color:#dc2626;font-size:13px;">Clearing all data... please wait.</p>';
+
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_BASE}/api/auth/users/clear-all`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (res.ok) {
+            resultDiv.innerHTML = `
+                <div style="background:#f0fdf4;border:1px solid #bbf7d0;padding:14px;border-radius:8px;">
+                    <p style="font-weight:700;color:#15803d;font-size:14px;">✅ All data cleared successfully!</p>
+                    <p style="color:#166534;font-size:13px;margin-top:4px;">
+                        Removed: <strong>${data.studentsRemoved} students</strong> and <strong>${data.teachersRemoved} teachers</strong>.
+                        Your admin account is intact. You can now re-upload your Excel file.
+                    </p>
+                </div>`;
+        } else {
+            resultDiv.innerHTML = `<p style="color:#dc2626;font-size:13px;">Error: ${data.error || 'Something went wrong.'}</p>`;
+        }
+    } catch(e) {
+        resultDiv.innerHTML = `<p style="color:#dc2626;font-size:13px;">Network error: ${e.message}</p>`;
+    }
+}
 </script>
 
 </body>
