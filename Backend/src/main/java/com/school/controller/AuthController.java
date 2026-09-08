@@ -30,6 +30,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
 import com.school.config.JwtUtil;
+import io.jsonwebtoken.Claims;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -299,18 +300,21 @@ public class AuthController {
 
     // ── 6.1 CLEAR ALL DATA (wipe students + teachers + their records) ──
     @DeleteMapping("/users/clear-all")
-    public ResponseEntity<?> clearAllData(@RequestHeader("Authorization") String authHeader) {
-        // Extract username from JWT token
+    public ResponseEntity<?> clearAllData(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer "))
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Missing or invalid token."));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Missing authorization token. Please log in again."));
 
         String token = authHeader.substring(7);
         String username;
-        try { username = jwtUtil.extractUsername(token); }
-        catch (Exception e) { return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Invalid token.")); }
+        try {
+            Claims claims = jwtUtil.parseToken(token);
+            username = claims.getSubject();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Session expired or invalid token. Please log in again."));
+        }
 
         Optional<User> adminOpt = userRepository.findByUsername(username);
-        if (adminOpt.isEmpty() || !"ADMIN".equals(adminOpt.get().getRole()))
+        if (adminOpt.isEmpty() || !"ADMIN".equalsIgnoreCase(adminOpt.get().getRole()))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Only admins can clear all data."));
 
         // Count what we're about to delete (for the summary)
